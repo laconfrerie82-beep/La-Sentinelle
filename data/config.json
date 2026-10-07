@@ -1,0 +1,25 @@
+{
+  "bienvenue": {
+    "actif": true,
+    "salonId": "",
+    "message": "Bienvenue sur le serveur {user} ! Tu es notre {count}ème membre. N'oublie pas de lire le règlement !",
+    "mention": true,
+    "embed": true,
+    "mp": false
+  },
+  "reglement": {
+    "salonId": "",
+    "messageId": "",
+    "roleAcceptationId": "",
+    "emoji": "✅",
+    "titre": "Règlement du serveur",
+    "contenu": "**1. Respectez-vous mutuellement**\nAucune insulte, harcèlement ou discrimination.\n\n**2. Pas de spam**\nÉvitez les messages répétitifs ou les mentions abusives.\n\n**3. Contenu approprié**\nPas de contenu NSFW en dehors des salons dédiés."
+  },
+  "automod": {
+    "actif": true,
+    "supprimerAuto": true,
+    "avertirMembre": true,
+    "salonLogsId": "",
+    "motsInterdits": []
+  }
+}
