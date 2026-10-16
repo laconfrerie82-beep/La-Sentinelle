@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jirito Bot — Panel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1f22;color:#dbdee1;min-height:100vh;display:flex}
+.sidebar{width:240px;background:#2b2d31;min-height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;border-right:1px solid #3f4147}
+.sidebar-header{padding:20px 16px;border-bottom:1px solid #3f4147}
+.bot-info{display:flex;align-items:center;gap:10px}
+.bot-avatar{width:40px;height:40px;background:#5865f2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.bot-name{font-size:15px;font-weight:600;color:#fff}
+.bot-status{font-size:12px;color:#23a55a;display:flex;align-items:center;gap:4px}
+.dot{width:8px;height:8px;border-radius:50%;background:#23a55a;display:inline-block}
+.user-info{padding:12px 16px;border-bottom:1px solid #3f4147;display:flex;align-items:center;gap:8px}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:#5865f2;display:flex;align-items:center;justify-content:center;font-size:14px}
+.user-name{font-size:13px;color:#dbdee1}
+.nav{flex:1;padding:8px 8px}
+.nav-section{padding:16px 8px 4px;color:#82858f;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;color:#b5bac1;font-size:13px;border-radius:6px;margin:1px 0;transition:all .15s;text-decoration:none}
+.nav-item:hover{background:#35373c;color:#dbdee1}
+.nav-item.active{background:#404249;color:#fff}
+.nav-item .icon{font-size:18px;width:22px;text-align:center}
+.logout{padding:16px;border-top:1px solid #3f4147}
+.logout a{display:flex;align-items:center;gap:8px;color:#82858f;font-size:13px;text-decoration:none;padding:8px 12px;border-radius:6px;transition:all .15s}
+.logout a:hover{background:#3a1a1a;color:#f28787}
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column}
+.topbar{background:#2b2d31;padding:16px 28px;border-bottom:1px solid #3f4147;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.topbar-icon{font-size:22px}
+.topbar-title{font-size:17px;font-weight:600;color:#fff}
+.topbar-desc{font-size:13px;color:#82858f}
+.content{padding:28px;flex:1}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:#2b2d31;border-radius:12px;padding:22px;margin-bottom:18px;border:1px solid #3f4147}
+.card-title{font-size:14px;font-weight:600;color:#dbdee1;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.card-title .icon{color:#5865f2;font-size:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{margin-bottom:14px}
+label{display:block;color:#b5bac1;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
+input[type=text],input[type=number],select,textarea{width:100%;background:#1e1f22;border:1px solid #3f4147;color:#dbdee1;border-radius:8px;padding:9px 12px;font-size:14px;outline:none;font-family:inherit;transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:#5865f2}
+textarea{resize:vertical;min-height:90px}
+select option{background:#1e1f22}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #3f4147}
+.toggle-row:last-of-type{border-bottom:none}
+.toggle-label{font-size:14px;color:#dbdee1}
+.toggle-desc{font-size:12px;color:#82858f;margin-top:2px}
+.switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#4e5058;border-radius:12px;cursor:pointer;transition:.2s}
+.slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:#5865f2}
+input:checked+.slider:before{transform:translateX(20px)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-primary{background:#5865f2;color:#fff}.btn-primary:hover{background:#4752c4}
+.btn-danger{background:#da3633;color:#fff}.btn-danger:hover{background:#b91c1c}
+.btn-secondary{background:#4e5058;color:#dbdee1}.btn-secondary:hover{background:#6d6f78}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-success{background:#23a55a;color:#fff}.btn-success:hover{background:#1a7f44}
+.tag{display:inline-flex;align-items:center;gap:6px;background:#3a1a1a;color:#f28787;padding:4px 10px;border-radius:12px;font-size:12px;margin:3px}
+.tag button{background:none;border:none;color:#f28787;cursor:pointer;font-size:15px;line-height:1;padding:0}
+.stat-card{background:#1e1f22;border-radius:10px;padding:16px;border:1px solid #3f4147}
+.stat-val{font-size:24px;font-weight:700;color:#fff;margin-bottom:3px}
+.stat-label{font-size:12px;color:#82858f}
+.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+.alert-success{background:#1a3a2a;color:#57f287;border:1px solid #23a55a}
+.alert-error{background:#3a1a1a;color:#f28787;border:1px solid #da3633}
+.badge{display:inline-flex;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:500}
+.badge-green{background:#1a3a2a;color:#57f287}
+.badge-blue{background:#1a1a3a;color:#949cf7}
+.chaine-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#1e1f22;border-radius:8px;margin-bottom:8px;border:1px solid #3f4147}
+.platform-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.yt-bg{background:#3a1a1a}.tw-bg{background:#1a1a3a}.tk-bg{background:#1a2a2a}
+.chaine-info{flex:1;min-width:0}
+.chaine-name{font-size:13px;font-weight:500;color:#dbdee1}
+.chaine-url{font-size:11px;color:#82858f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="bot-info">
+      <div class="bot-avatar">🤖</div>
+      <div>
+        <div class="bot-name">Jirito Bot</div>
+        <div class="bot-status"><span class="dot"></span> En ligne</div>
+      </div>
+    </div>
+  </div>
+  <div class="user-info">
+    <div class="user-avatar" id="userAvatar">?</div>
+    <div class="user-name" id="userName">Chargement...</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Général</div>
+    <a class="nav-item active" onclick="show('bienvenue',this)" href="#">
+      <span class="icon">👋</span>Accueil & Bienvenue
+    </a>
+    <a class="nav-item" onclick="show('reglement',this)" href="#">
+      <span class="icon">📋</span>Règlement
+    </a>
+    <div class="nav-section">Communauté</div>
+    <a class="nav-item" onclick="show('niveaux',this)" href="#">
+      <span class="icon">🏆</span>Niveaux & XP
+    </a>
+    <a class="nav-item" onclick="show('automod',this)" href="#">
+      <span class="icon">🛡️</span>Auto-Modération
+    </a>
+    <div class="nav-section">Contenu</div>
+    <a class="nav-item" onclick="show('chaines',this)" href="#">
+      <span class="icon">📺</span>Chaînes & Réseaux
+    </a>
+  </nav>
+  <div class="logout">
+    <a href="/auth/logout">🚪 Déconnexion</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <span class="topbar-icon" id="topbarIcon">👋</span>
+    <span class="topbar-title" id="topbarTitle">Accueil & Bienvenue</span>
+    <span class="topbar-desc" id="topbarDesc">— Message et salon de bienvenue</span>
+  </div>
+
+  <div class="content">
+    <div id="alert" class="alert"></div>
+
+    <!-- BIENVENUE -->
+    <div class="panel active" id="panel-bienvenue">
+      <div class="card">
+        <div class="card-title"><span class="icon">⚙️</span>Configuration de la bienvenue</div>
+        <div class="grid2">
+          <div class="form-group">
+            <label>Salon de bienvenue (ID)</label>
+            <input type="text" id="bv-salonId" placeholder="ID du salon Discord">
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end">
+            <div>
+              <label>Statut</label>
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 0">
+                <label class="switch"><input type="checkbox" id="bv-actif"><span class="slider"></span></label>
+                <span style="font-size:13px;color:#b5bac1">Activer la bienvenue</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Message de bienvenue</label>
+          <textarea id="bv-message" placeholder="{user} = mention, {count} = nb membres, {serveur} = nom du serveur"></textarea>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Mentionner le membre</div><div class="toggle-desc">Mentionne le nouveau membre dans le message</div></div>
+          <label class="switch"><input type="checkbox" id="bv-mention"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Afficher en embed</div><div class="toggle-desc">Message avec carte colorée</div></div>
+          <label class="switch"><input type="checkbox" id="bv-embed"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Message privé</div><div class="toggle-desc">Envoyer aussi un MP au nouveau membre</div></div>
+          <label class="switch"><input type="checkbox" id="bv-mp"><span class="slider"></span></label>
+        </div>
+        <div style="margin-top:18px">
+          <button class="btn btn-primary" onclick="saveBienvenue()">💾 Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGLEMENT -->
+    <div class="panel" id="panel-reglement">
+      <div class="card">
+        <div class="card-title"><span class="icon">📋</span>Contenu du règlement</div>
+        <div class="grid2">
+          <div class="form-group">
+            <label>Titre</label>
+            <input type="text" id="reg-titre" placeholder="Règlement du serveur">
+          </div>
+          <div class="form-group">
+            <label>Rôle d'acceptation (ID)</label>
+            <input type="text" id="reg-roleId" placeholder="ID du rôle à donner">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Contenu (markdown supporté)</label>
+          <textarea id="reg-contenu" style="min-height:160px"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveReglement()">💾 Sauvegarder</button>
+      </div>
+    </div>
+
+    <!-- NIVEAUX -->
+    <div class="panel" id="panel-niveaux">
+      <div class="grid2" style="margin-bottom:18px">
+        <div class="stat-card"><div class="stat-val" id="stat-xpmsg">15</div><div class="stat-label">XP par message</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-xpvocal">8</div><div class="stat-label">XP par minute vocal</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon">⚙️</span>Configuration XP</div>
+        <div class="grid2">
+          <div class="form-group">
+            <label>XP par message</label>
+            <input type="number" id="niv-xpMsg" min="1" max="100">
+          </div>
+          <div class="form-group">
+            <label>XP par minute vocal</label>
+            <input type="number" id="niv-xpVocal" min="1" max="100">
+          </div>
+          <div class="form-group">
+            <label>Cooldown messages (sec)</label>
+            <input type="number" id="niv-cooldown" min="0">
+          </div>
+          <div class="form-group">
+            <label>Salon d'annonce (ID)</label>
+            <input type="text" id="niv-salonId" placeholder="ID du salon">
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Système de niveaux actif</div></div>
+          <label class="switch"><input type="checkbox" id="niv-actif"><span class="slider"></span></label>
+        </div>
+        <div style="margin-top:18px">
+          <button class="btn btn-primary" onclick="saveNiveaux()">💾 Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTOMOD -->
+    <div class="panel" id="panel-automod">
+      <div class="card">
+        <div class="card-title"><span class="icon">⚙️</span>Paramètres</div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Auto-modération active</div></div>
+          <label class="switch"><input type="checkbox" id="am-actif"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Supprimer automatiquement</div></div>
+          <label class="switch"><input type="checkbox" id="am-supprimer"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Avertir le membre en MP</div></div>
+          <label class="switch"><input type="checkbox" id="am-avertir"><span class="slider"></span></label>
+        </div>
+        <div class="form-group" style="margin-top:14px">
+          <label>Salon de logs (ID)</label>
+          <input type="text" id="am-logsId" placeholder="ID du salon de logs">
+        </div>
+        <button class="btn btn-primary" onclick="saveAutomod()">💾 Sauvegarder</button>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon">🚫</span>Mots interdits</div>
+        <div id="mots-list" style="margin-bottom:14px"></div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="nouveau-mot" placeholder="Ajouter un mot interdit..." style="flex:1">
+          <button class="btn btn-danger btn-sm" onclick="ajouterMot()">+ Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAINES -->
+    <div class="panel" id="panel-chaines">
+      <div class="card">
+        <div class="card-title"><span class="icon">➕</span>Ajouter une chaîne</div>
+        <div class="grid2">
+          <div class="form-group">
+            <label>Plateforme</label>
+            <select id="ch-plateforme">
+              <option value="youtube">📺 YouTube</option>
+              <option value="twitch">🟣 Twitch</option>
+              <option value="tiktok">🎵 TikTok</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Nom affiché</label>
+            <input type="text" id="ch-nom" placeholder="Ma chaîne">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>URL</label>
+          <input type="text" id="ch-url" placeholder="https://...">
+        </div>
+        <button class="btn btn-success" onclick="ajouterChaine()">➕ Ajouter</button>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon">📋</span>Chaînes enregistrées</div>
+        <div id="chaines-list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const PANELS = {
+  bienvenue: { icon:'👋', title:'Accueil & Bienvenue', desc:'— Message et salon de bienvenue' },
+  reglement: { icon:'📋', title:'Règlement', desc:'— Configuration du règlement' },
+  niveaux:   { icon:'🏆', title:'Niveaux & XP', desc:'— Système de points et récompenses' },
+  automod:   { icon:'🛡️', title:'Auto-Modération', desc:'— Filtrage automatique des messages' },
+  chaines:   { icon:'📺', title:'Chaînes & Réseaux', desc:'— YouTube, Twitch, TikTok' },
+};
+
+let config = {};
+let chaines = [];
+
+async function init() {
+  // Charger utilisateur
+  const user = await fetch('/api/user').then(r=>r.json());
+  document.getElementById('userName').textContent = user.username;
+  document.getElementById('userAvatar').textContent = user.username[0].toUpperCase();
+
+  // Charger config
+  config = await fetch('/api/config').then(r=>r.json());
+  applyConfig();
+
+  // Charger chaînes
+  loadChaines();
+}
+
+function applyConfig() {
+  // Bienvenue
+  document.getElementById('bv-salonId').value = config.bienvenue?.salonId || '';
+  document.getElementById('bv-actif').checked = config.bienvenue?.actif || false;
+  document.getElementById('bv-message').value = config.bienvenue?.message || '';
+  document.getElementById('bv-mention').checked = config.bienvenue?.mention || false;
+  document.getElementById('bv-embed').checked = config.bienvenue?.embed || false;
+  document.getElementById('bv-mp').checked = config.bienvenue?.mp || false;
+
+  // Règlement
+  document.getElementById('reg-titre').value = config.reglement?.titre || '';
+  document.getElementById('reg-contenu').value = config.reglement?.contenu || '';
+  document.getElementById('reg-roleId').value = config.reglement?.roleAcceptationId || '';
+
+  // Niveaux
+  const niv = config.niveaux || {};
+  document.getElementById('niv-xpMsg').value = niv.xpParMessage || 15;
+  document.getElementById('niv-xpVocal').value = niv.xpParMinuteVocal || 8;
+  document.getElementById('niv-cooldown').value = niv.cooldownMessages || 60;
+  document.getElementById('niv-salonId').value = niv.salonAnnonceId || '';
+  document.getElementById('niv-actif').checked = niv.actif || false;
+  document.getElementById('stat-xpmsg').textContent = niv.xpParMessage || 15;
+  document.getElementById('stat-xpvocal').textContent = niv.xpParMinuteVocal || 8;
+
+  // AutoMod
+  const am = config.automod || {};
+  document.getElementById('am-actif').checked = am.actif || false;
+  document.getElementById('am-supprimer').checked = am.supprimerAuto || false;
+  document.getElementById('am-avertir').checked = am.avertirMembre || false;
+  document.getElementById('am-logsId').value = am.salonLogsId || '';
+  renderMots(am.motsInterdits || []);
+}
+
+function show(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  const p = PANELS[id];
+  document.getElementById('topbarIcon').textContent = p.icon;
+  document.getElementById('topbarTitle').textContent = p.title;
+  document.getElementById('topbarDesc').textContent = p.desc;
+}
+
+function showAlert(msg, type='success') {
+  const el = document.getElementById('alert');
+  el.textContent = msg;
+  el.className = `alert alert-${type}`;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display='none', 3000);
+}
+
+async function saveBienvenue() {
+  const res = await fetch('/api/config/bienvenue', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      actif: document.getElementById('bv-actif').checked,
+      salonId: document.getElementById('bv-salonId').value,
+      message: document.getElementById('bv-message').value,
+      mention: document.getElementById('bv-mention').checked,
+      embed: document.getElementById('bv-embed').checked,
+      mp: document.getElementById('bv-mp').checked,
+    })
+  }).then(r=>r.json());
+  res.success ? showAlert('✅ Bienvenue sauvegardée !') : showAlert('❌ Erreur', 'error');
+}
+
+async function saveReglement() {
+  const res = await fetch('/api/config/reglement', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      titre: document.getElementById('reg-titre').value,
+      contenu: document.getElementById('reg-contenu').value,
+      roleAcceptationId: document.getElementById('reg-roleId').value,
+    })
+  }).then(r=>r.json());
+  res.success ? showAlert('✅ Règlement sauvegardé !') : showAlert('❌ Erreur', 'error');
+}
+
+async function saveNiveaux() {
+  const xpMsg = document.getElementById('niv-xpMsg').value;
+  const xpVocal = document.getElementById('niv-xpVocal').value;
+  const res = await fetch('/api/config/niveaux', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      actif: document.getElementById('niv-actif').checked,
+      xpParMessage: xpMsg,
+      xpParMinuteVocal: xpVocal,
+      cooldownMessages: document.getElementById('niv-cooldown').value,
+      salonAnnonceId: document.getElementById('niv-salonId').value,
+    })
+  }).then(r=>r.json());
+  if (res.success) {
+    document.getElementById('stat-xpmsg').textContent = xpMsg;
+    document.getElementById('stat-xpvocal').textContent = xpVocal;
+    showAlert('✅ Niveaux sauvegardés !');
+  } else showAlert('❌ Erreur', 'error');
+}
+
+async function saveAutomod() {
+  const res = await fetch('/api/config/automod', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      actif: document.getElementById('am-actif').checked,
+      supprimerAuto: document.getElementById('am-supprimer').checked,
+      avertirMembre: document.getElementById('am-avertir').checked,
+      salonLogsId: document.getElementById('am-logsId').value,
+    })
+  }).then(r=>r.json());
+  res.success ? showAlert('✅ AutoMod sauvegardé !') : showAlert('❌ Erreur', 'error');
+}
+
+function renderMots(mots) {
+  const el = document.getElementById('mots-list');
+  el.innerHTML = mots.length === 0 ? '<span style="color:#82858f;font-size:13px">Aucun mot interdit.</span>' :
+    mots.map(m => `<span class="tag">${m} <button onclick="supprimerMot('${m}')">×</button></span>`).join('');
+}
+
+async function ajouterMot() {
+  const mot = document.getElementById('nouveau-mot').value.trim();
+  if (!mot) return;
+  const res = await fetch('/api/config/automod/mot', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action:'ajouter', mot })
+  }).then(r=>r.json());
+  if (res.success) { renderMots(res.mots); document.getElementById('nouveau-mot').value=''; }
+}
+
+async function supprimerMot(mot) {
+  const res = await fetch('/api/config/automod/mot', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action:'supprimer', mot })
+  }).then(r=>r.json());
+  if (res.success) renderMots(res.mots);
+}
+
+// Chaînes (stockage localStorage pour la démo)
+function loadChaines() {
+  chaines = JSON.parse(localStorage.getItem('jirito-chaines') || '[]');
+  renderChaines();
+}
+
+function renderChaines() {
+  const el = document.getElementById('chaines-list');
+  if (chaines.length === 0) { el.innerHTML = '<span style="color:#82858f;font-size:13px">Aucune chaîne enregistrée.</span>'; return; }
+  const icons = { youtube:'📺', twitch:'🟣', tiktok:'🎵' };
+  const bgs = { youtube:'yt-bg', twitch:'tw-bg', tiktok:'tk-bg' };
+  el.innerHTML = chaines.map((c,i) => `
+    <div class="chaine-row">
+      <div class="platform-icon ${bgs[c.plateforme]}">${icons[c.plateforme]}</div>
+      <div class="chaine-info">
+        <div class="chaine-name">${c.nom}</div>
+        <div class="chaine-url">${c.url}</div>
+      </div>
+      <span class="badge badge-green">Actif</span>
+      <button class="btn btn-danger btn-sm" onclick="supprimerChaine(${i})" style="margin-left:8px">🗑️</button>
+    </div>
+  `).join('');
+}
+
+function ajouterChaine() {
+  const nom = document.getElementById('ch-nom').value.trim();
+  const url = document.getElementById('ch-url').value.trim();
+  const plateforme = document.getElementById('ch-plateforme').value;
+  if (!nom || !url) return showAlert('❌ Remplis le nom et l\'URL', 'error');
+  chaines.push({ nom, url, plateforme });
+  localStorage.setItem('jirito-chaines', JSON.stringify(chaines));
+  renderChaines();
+  document.getElementById('ch-nom').value='';
+  document.getElementById('ch-url').value='';
+  showAlert('✅ Chaîne ajoutée !');
+}
+
+function supprimerChaine(i) {
+  chaines.splice(i, 1);
+  localStorage.setItem('jirito-chaines', JSON.stringify(chaines));
+  renderChaines();
+}
+
+init();
+</script>
+</body>
+</html>
