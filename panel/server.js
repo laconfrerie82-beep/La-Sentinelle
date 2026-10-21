@@ -10,7 +10,7 @@ const PORT = process.env.PANEL_PORT || 3000;
 
 const DISCORD_CLIENT_ID = process.env.CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-const REDIRECT_URI = process.env.PANEL_URL + '/auth/callback';
+const REDIRECT_URI = const REDIRECT_URI = 'https://la-sentinelle-production.up.railway.app/auth/callback';
 const GUILD_ID = process.env.GUILD_ID;
 const ROLES_AUTORISES = ['Modérateur', 'Fondateur'];
 
