@@ -21,5 +21,17 @@
     "avertirMembre": true,
     "salonLogsId": "",
     "motsInterdits": []
+  },
+  "niveaux": {
+    "actif": true,
+    "xpParMessage": 15,
+    "xpParMinuteVocal": 8,
+    "cooldownMessages": 60,
+    "salonAnnonceId": "",
+    "recompenses": [
+      { "niveau": 5, "roleId": "" },
+      { "niveau": 10, "roleId": "" },
+      { "niveau": 25, "roleId": "" }
+    ]
   }
 }
