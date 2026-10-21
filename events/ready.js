@@ -5,6 +5,7 @@ module.exports = {
   once: true,
   execute(client) {
     console.log(`✅ Jirito Bot connecté en tant que ${client.user.tag}`);
-    client.user.setActivity('le serveur 👁️', { type: ActivityType.Watching });
+    console.log(`📡 Présent sur ${client.guilds.cache.size} serveur(s)`);
+    client.user.setActivity('plusieurs serveurs 👁️', { type: ActivityType.Watching });
   },
 };
