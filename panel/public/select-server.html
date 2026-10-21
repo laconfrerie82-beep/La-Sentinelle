@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jirito Bot — Choisir un serveur</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1f22;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.container{width:100%;max-width:500px}
+h1{color:#fff;font-size:22px;text-align:center;margin-bottom:8px}
+p{color:#b5bac1;font-size:14px;text-align:center;margin-bottom:28px}
+.server-card{display:flex;align-items:center;gap:14px;background:#2b2d31;border:1px solid #3f4147;border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.server-card:hover{background:#35373c;border-color:#5865f2}
+.server-icon{width:48px;height:48px;border-radius:12px;background:#5865f2;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.server-icon img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.server-name{color:#fff;font-size:15px;font-weight:500}
+.server-sub{color:#82858f;font-size:12px;margin-top:2px}
+.empty{text-align:center;color:#82858f;padding:32px;background:#2b2d31;border-radius:12px}
+.empty a{color:#5865f2;text-decoration:none}
+.loading{text-align:center;color:#82858f;padding:32px}
+.user-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;background:#2b2d31;border-radius:10px;padding:12px 16px}
+.user-info{display:flex;align-items:center;gap:10px}
+.avatar{width:32px;height:32px;border-radius:50%;background:#5865f2;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:500}
+.username{color:#dbdee1;font-size:14px}
+.logout{color:#82858f;font-size:12px;text-decoration:none}
+.logout:hover{color:#f28787}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="user-bar">
+    <div class="user-info">
+      <div class="avatar" id="avatar">?</div>
+      <span class="username" id="username">Chargement...</span>
+    </div>
+    <a href="/auth/logout" class="logout">Déconnexion</a>
+  </div>
+  <h1>🤖 Choisir un serveur</h1>
+  <p>Sélectionne le serveur Discord que tu veux configurer</p>
+  <div id="server-list"><div class="loading">Chargement des serveurs...</div></div>
+</div>
+
+<script>
+async function init() {
+  const user = await fetch('/api/user').then(r=>r.json());
+  document.getElementById('username').textContent = user.username;
+  document.getElementById('avatar').textContent = user.username[0].toUpperCase();
+
+  const guilds = await fetch('/api/guilds').then(r=>r.json());
+  const list = document.getElementById('server-list');
+
+  if (guilds.length === 0) {
+    list.innerHTML = `<div class="empty">
+      <p style="font-size:32px;margin-bottom:12px">😕</p>
+      <p>Aucun serveur trouvé où tu as les permissions et où le bot est présent.</p>
+      <p style="margin-top:8px"><a href="https://discord.com/oauth2/authorize?client_id=${location.hostname}" target="_blank">Inviter le bot sur un serveur</a></p>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = guilds.map(g => `
+    <div class="server-card" onclick="selectGuild('${g.id}')">
+      <div class="server-icon">
+        ${g.icon ? `<img src="https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png" alt="${g.name}">` : g.name[0].toUpperCase()}
+      </div>
+      <div>
+        <div class="server-name">${g.name}</div>
+        <div class="server-sub">Cliquer pour configurer</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function selectGuild(guildId) {
+  await fetch('/api/select-guild', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ guildId })
+  });
+  window.location.href = '/dashboard';
+}
+
+init();
+</script>
+</body>
+</html>
