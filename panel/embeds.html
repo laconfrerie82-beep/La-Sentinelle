@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jirito Bot — Éditeur d'embeds</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1f22;color:#dbdee1;min-height:100vh}
+.topbar{background:#2b2d31;padding:14px 24px;border-bottom:1px solid #3f4147;display:flex;align-items:center;gap:12px}
+.back{color:#5865f2;text-decoration:none;font-size:14px;display:flex;align-items:center;gap:6px}
+.topbar-title{color:#fff;font-size:16px;font-weight:600}
+.container{display:grid;grid-template-columns:320px 1fr;gap:0;min-height:calc(100vh - 53px)}
+.sidebar{background:#2b2d31;border-right:1px solid #3f4147;padding:16px}
+.module-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;color:#b5bac1;font-size:13px;margin-bottom:4px;border:1px solid transparent;transition:all .15s;background:none;width:100%;text-align:left}
+.module-btn:hover{background:#35373c;color:#dbdee1}
+.module-btn.active{background:#404249;color:#fff;border-color:#5865f2}
+.module-btn .icon{font-size:18px}
+.editor{padding:24px;overflow-y:auto}
+.section{background:#2b2d31;border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid #3f4147}
+.section-title{font-size:14px;font-weight:600;color:#dbdee1;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.form-group{margin-bottom:14px}
+label{display:block;color:#b5bac1;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
+input[type=text],input[type=color],select,textarea{width:100%;background:#1e1f22;border:1px solid #3f4147;color:#dbdee1;border-radius:8px;padding:9px 12px;font-size:14px;outline:none;font-family:inherit;transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:#5865f2}
+input[type=color]{height:40px;padding:4px 8px;cursor:pointer}
+textarea{resize:vertical;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #3f4147}
+.toggle-row:last-of-type{border-bottom:none}
+.toggle-label{font-size:13px;color:#dbdee1}
+.switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#4e5058;border-radius:12px;cursor:pointer;transition:.2s}
+.slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:#5865f2}
+input:checked+.slider:before{transform:translateX(20px)}
+.champ-row{background:#1e1f22;border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid #3f4147}
+.champ-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.champ-header input[type=checkbox]{width:auto}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-primary{background:#5865f2;color:#fff}.btn-primary:hover{background:#4752c4}
+.btn-success{background:#23a55a;color:#fff}.btn-success:hover{background:#1a7f44}
+.btn-danger{background:#da3633;color:#fff;padding:6px 12px;font-size:12px}.btn-danger:hover{background:#b91c1c}
+.btn-secondary{background:#4e5058;color:#dbdee1;padding:6px 12px;font-size:12px}
+.preview-box{background:#36393f;border-radius:8px;padding:16px;border-left:4px solid #5865f2;margin-top:16px}
+.preview-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:6px}
+.preview-desc{font-size:14px;color:#dcddde;line-height:1.5;margin-bottom:10px}
+.preview-field{margin-bottom:8px}
+.preview-field-name{font-size:12px;font-weight:600;color:#fff;margin-bottom:2px}
+.preview-field-val{font-size:14px;color:#dcddde}
+.preview-footer{font-size:12px;color:#72767d;margin-top:10px}
+.alert{padding:10px 16px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+.alert-success{background:#1a3a2a;color:#57f287;border:1px solid #23a55a}
+.hint{font-size:11px;color:#82858f;margin-top:4px}
+select option{background:#1e1f22}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/dashboard" class="back">← Retour au panel</a>
+  <span style="color:#3f4147">|</span>
+  <span class="topbar-title">🎨 Éditeur d'embeds</span>
+</div>
+
+<div class="container">
+  <div class="sidebar">
+    <div style="color:#82858f;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:8px 4px 12px">Modules</div>
+    <button class="module-btn active" onclick="loadModule('bienvenue',this)"><span class="icon">👋</span>Bienvenue</button>
+    <button class="module-btn" onclick="loadModule('reglement',this)"><span class="icon">📋</span>Règlement</button>
+    <button class="module-btn" onclick="loadModule('niveau',this)"><span class="icon">🏆</span>Passage de niveau</button>
+    <button class="module-btn" onclick="loadModule('automod',this)"><span class="icon">🛡️</span>Auto-Modération</button>
+    <button class="module-btn" onclick="loadModule('annonce_chaine',this)"><span class="icon">📺</span>Annonce chaîne</button>
+    <button class="module-btn" onclick="loadModule('sondage',this)"><span class="icon">📊</span>Sondage</button>
+  </div>
+
+  <div class="editor">
+    <div id="alert" class="alert"></div>
+
+    <div class="section">
+      <div class="section-title">🎨 Apparence</div>
+      <div class="row2">
+        <div class="form-group">
+          <label>Couleur de l'embed</label>
+          <input type="color" id="couleur" value="#5865F2">
+        </div>
+        <div class="form-group">
+          <label>Timestamp</label>
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 0">
+            <label class="switch"><input type="checkbox" id="timestamp"><span class="slider"></span></label>
+            <span style="font-size:13px;color:#b5bac1">Afficher l'heure</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📝 Contenu</div>
+      <div class="form-group">
+        <label>Titre</label>
+        <input type="text" id="titre" placeholder="Titre de l'embed">
+        <div class="hint">Variables disponibles selon le module : {serveur}, {user}, {count}, {niveau}, {mot}...</div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="description" placeholder="Description de l'embed"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Image (URL)</label>
+        <input type="text" id="image" placeholder="https://... (grande image en bas)">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🖼️ Thumbnail (petite image)</div>
+      <div class="row2">
+        <div class="form-group">
+          <label>Type</label>
+          <select id="thumbnail" onchange="toggleThumbnailUrl()">
+            <option value="aucun">Aucun</option>
+            <option value="avatar">Avatar du membre</option>
+            <option value="serveur">Icône du serveur</option>
+            <option value="custom">URL personnalisée</option>
+          </select>
+        </div>
+        <div class="form-group" id="thumbnail-url-group" style="display:none">
+          <label>URL du thumbnail</label>
+          <input type="text" id="thumbnailUrl" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📌 Footer</div>
+      <div class="form-group">
+        <label>Texte du footer</label>
+        <input type="text" id="footer" placeholder="Jirito Bot">
+      </div>
+      <div class="row2">
+        <div class="form-group">
+          <label>Icône footer</label>
+          <select id="footerIcon" onchange="toggleFooterIconUrl()">
+            <option value="aucun">Aucune</option>
+            <option value="serveur">Icône du serveur</option>
+            <option value="custom">URL personnalisée</option>
+          </select>
+        </div>
+        <div class="form-group" id="footer-icon-url-group" style="display:none">
+          <label>URL de l'icône</label>
+          <input type="text" id="footerIconUrl" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📋 Champs</div>
+      <div id="champs-list"></div>
+      <button class="btn btn-success" style="margin-top:8px" onclick="ajouterChamp()">➕ Ajouter un champ</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">👁️ Aperçu</div>
+      <div id="preview" class="preview-box"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-primary" onclick="sauvegarder()">💾 Sauvegarder</button>
+      <button class="btn btn-secondary" onclick="resetModule()">↺ Réinitialiser</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentModule = 'bienvenue';
+let embedsData = {};
+
+const VARIABLES_AIDE = {
+  bienvenue: '{serveur} {user} {count} {userId} {avatarUrl}',
+  reglement: '{titre} {contenu} {emoji}',
+  niveau: '{userId} {niveau} {avatarUrl} {serveur}',
+  automod: '{userId} {salonId} {mot} {serveur}',
+  annonce_chaine: '{emoji} {titre} {description} {miniature} {nomChaine} {urlChaine} {url}',
+  sondage: '{question} {options} {userId}'
+};
+
+async function init() {
+  embedsData = await fetch('/api/embeds').then(r => r.json());
+  loadModule('bienvenue', document.querySelector('.module-btn.active'));
+}
+
+function loadModule(module, btn) {
+  currentModule = module;
+  document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const config = embedsData[module] || {};
+
+  document.getElementById('couleur').value = config.couleur || '#5865F2';
+  document.getElementById('titre').value = config.titre || '';
+  document.getElementById('description').value = config.description || '';
+  document.getElementById('image').value = config.image || '';
+  document.getElementById('thumbnail').value = config.thumbnail || 'aucun';
+  document.getElementById('thumbnailUrl').value = config.thumbnailUrl || '';
+  document.getElementById('footer').value = config.footer || '';
+  document.getElementById('footerIcon').value = config.footerIcon || 'aucun';
+  document.getElementById('footerIconUrl').value = config.footerIconUrl || '';
+  document.getElementById('timestamp').checked = config.timestamp !== false;
+
+  toggleThumbnailUrl();
+  toggleFooterIconUrl();
+  renderChamps(config.champs || []);
+  updatePreview();
+
+  // Aide variables
+  document.querySelector('.hint').textContent = `Variables : ${VARIABLES_AIDE[module] || ''}`;
+}
+
+function toggleThumbnailUrl() {
+  document.getElementById('thumbnail-url-group').style.display =
+    document.getElementById('thumbnail').value === 'custom' ? 'block' : 'none';
+}
+
+function toggleFooterIconUrl() {
+  document.getElementById('footer-icon-url-group').style.display =
+    document.getElementById('footerIcon').value === 'custom' ? 'block' : 'none';
+}
+
+function renderChamps(champs) {
+  const el = document.getElementById('champs-list');
+  el.innerHTML = champs.map((c, i) => `
+    <div class="champ-row" id="champ-${i}">
+      <div class="champ-header">
+        <input type="checkbox" id="champ-actif-${i}" ${c.actif ? 'checked' : ''} onchange="updatePreview()">
+        <label for="champ-actif-${i}" style="font-size:13px;color:#dbdee1;cursor:pointer">Actif</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#82858f;margin-left:auto">
+          <input type="checkbox" id="champ-inline-${i}" ${c.inline ? 'checked' : ''} onchange="updatePreview()">
+          Inline
+        </label>
+        <button class="btn btn-danger" onclick="supprimerChamp(${i})">🗑️</button>
+      </div>
+      <div class="row2">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Nom</label>
+          <input type="text" id="champ-nom-${i}" value="${c.nom || ''}" oninput="updatePreview()" placeholder="Nom du champ">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Valeur</label>
+          <input type="text" id="champ-val-${i}" value="${c.valeur || ''}" oninput="updatePreview()" placeholder="Valeur">
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function ajouterChamp() {
+  const champs = getChamps();
+  champs.push({ actif: true, nom: 'Nouveau champ', valeur: 'Valeur', inline: true });
+  renderChamps(champs);
+  updatePreview();
+}
+
+function supprimerChamp(i) {
+  const champs = getChamps();
+  champs.splice(i, 1);
+  renderChamps(champs);
+  updatePreview();
+}
+
+function getChamps() {
+  const champs = [];
+  let i = 0;
+  while (document.getElementById(`champ-${i}`)) {
+    champs.push({
+      actif: document.getElementById(`champ-actif-${i}`).checked,
+      nom: document.getElementById(`champ-nom-${i}`).value,
+      valeur: document.getElementById(`champ-val-${i}`).value,
+      inline: document.getElementById(`champ-inline-${i}`).checked,
+    });
+    i++;
+  }
+  return champs;
+}
+
+function getCurrentConfig() {
+  return {
+    couleur: document.getElementById('couleur').value,
+    titre: document.getElementById('titre').value,
+    description: document.getElementById('description').value,
+    image: document.getElementById('image').value,
+    thumbnail: document.getElementById('thumbnail').value,
+    thumbnailUrl: document.getElementById('thumbnailUrl').value,
+    footer: document.getElementById('footer').value,
+    footerIcon: document.getElementById('footerIcon').value,
+    footerIconUrl: document.getElementById('footerIconUrl').value,
+    timestamp: document.getElementById('timestamp').checked,
+    champs: getChamps(),
+  };
+}
+
+function updatePreview() {
+  const config = getCurrentConfig();
+  const preview = document.getElementById('preview');
+  preview.style.borderLeftColor = config.couleur;
+
+  let html = '';
+  if (config.titre) html += `<div class="preview-title">${config.titre}</div>`;
+  if (config.description) html += `<div class="preview-desc">${config.description}</div>`;
+  for (const c of config.champs) {
+    if (c.actif) {
+      html += `<div class="preview-field"><div class="preview-field-name">${c.nom}</div><div class="preview-field-val">${c.valeur}</div></div>`;
+    }
+  }
+  if (config.footer) html += `<div class="preview-footer">${config.footer}</div>`;
+  if (!html) html = '<span style="color:#82858f">Aperçu vide</span>';
+  preview.innerHTML = html;
+}
+
+async function sauvegarder() {
+  embedsData[currentModule] = getCurrentConfig();
+  const res = await fetch('/api/embeds', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(embedsData)
+  }).then(r => r.json());
+
+  const alert = document.getElementById('alert');
+  if (res.success) {
+    alert.textContent = '✅ Embed sauvegardé !';
+    alert.className = 'alert alert-success';
+  } else {
+    alert.textContent = '❌ Erreur lors de la sauvegarde.';
+    alert.className = 'alert alert-error';
+  }
+  alert.style.display = 'block';
+  setTimeout(() => alert.style.display = 'none', 3000);
+}
+
+async function resetModule() {
+  if (!confirm('Réinitialiser cet embed aux valeurs par défaut ?')) return;
+  const defaults = await fetch('/api/embeds/defaults').then(r => r.json());
+  embedsData[currentModule] = defaults[currentModule];
+  loadModule(currentModule, document.querySelector('.module-btn.active'));
+  showAlert('✅ Embed réinitialisé !');
+}
+
+// Mise à jour aperçu en temps réel
+document.addEventListener('input', updatePreview);
+document.addEventListener('change', updatePreview);
+
+init();
+</script>
+</body>
+</html>
