@@ -116,7 +116,7 @@ app.get('/auth/callback', async (req, res) => {
       isOwner,
     };
 
-    res.redirect('/dashboard');
+    res.redirect('/select-server');
   } catch (err) {
     console.error('Erreur OAuth:', err.response?.data || err.message);
     res.redirect('/login?error=1');
