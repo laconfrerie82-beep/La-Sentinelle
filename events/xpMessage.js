@@ -1,5 +1,5 @@
-const { Events, EmbedBuilder } = require('discord.js');
-const { getConfig, getUserData, saveUserData, getNiveau } = require('../utils');
+const { Events } = require('discord.js');
+const { getConfig, getUserData, saveUserData, getNiveau, getEmbed, buildEmbed } = require('../utils');
 
 module.exports = {
   name: Events.MessageCreate,
@@ -19,9 +19,13 @@ module.exports = {
     if (nouveauNiveau > ancienNiveau && config.niveaux.salonAnnonceId) {
       const salon = message.guild.channels.cache.get(config.niveaux.salonAnnonceId);
       if (salon) {
-        const embed = new EmbedBuilder().setTitle('🎉 Niveau supérieur !')
-          .setDescription(`<@${message.author.id}> passe au niveau **${nouveauNiveau}** !`)
-          .setColor(0x5865f2).setTimestamp();
+        const embedConfig = getEmbed(message.guild.id, 'niveau');
+        const embed = buildEmbed(embedConfig, {
+          userId: message.author.id,
+          niveau: nouveauNiveau,
+          avatarUrl: message.author.displayAvatarURL({ dynamic: true }),
+          serveur: message.guild.name,
+        });
         await salon.send({ embeds: [embed] });
       }
       const recompense = config.niveaux.recompenses.find(r => r.niveau === nouveauNiveau && r.roleId);
