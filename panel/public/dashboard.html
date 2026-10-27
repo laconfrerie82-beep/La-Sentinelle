@@ -308,9 +308,8 @@ let chaines = [];
 
 async function init() {
   // Charger utilisateur
-  const user = await fetch('/api/user').then(r=>r.json());
-  document.getElementById('userName').textContent = user.username;
-  document.getElementById('userAvatar').textContent = user.username[0].toUpperCase();
+  const guildInfo = await fetch('/api/guild').then(r=>r.json());
+document.getElementById('guildName').textContent = guildInfo.name;
 
   // Charger config
   config = await fetch('/api/config').then(r=>r.json());
