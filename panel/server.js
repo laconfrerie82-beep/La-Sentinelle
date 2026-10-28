@@ -106,6 +106,15 @@ app.post('/api/select-guild', requireAuth, (req, res) => {
   req.session.guildId = req.body.guildId;
   res.json({ success: true });
 });
+app.get('/api/guild', requireAuth, requireGuild, async (req, res) => {
+  try {
+    const guilds = req.session.guilds || [];
+    const guild = guilds.find(g => g.id === req.session.guildId);
+    res.json({ id: req.session.guildId, name: guild?.name || 'Serveur inconnu', icon: guild?.icon || null });
+  } catch (err) {
+    res.json({ id: req.session.guildId, name: 'Serveur inconnu', icon: null });
+  }
+});
 
 app.get('/dashboard', requireAuth, requireGuild, (req, res) => res.sendFile(path.join(__dirname, 'public/dashboard.html')));
 app.get('/embeds', requireAuth, requireGuild, (req, res) => res.sendFile(path.join(__dirname, 'public/embeds.html')));
