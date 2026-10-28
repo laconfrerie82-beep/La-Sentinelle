@@ -43,7 +43,19 @@ input:checked+.slider:before{transform:translateX(20px)}
 .btn-success{background:#23a55a;color:#fff}.btn-success:hover{background:#1a7f44}
 .btn-danger{background:#da3633;color:#fff;padding:6px 12px;font-size:12px}.btn-danger:hover{background:#b91c1c}
 .btn-secondary{background:#4e5058;color:#dbdee1;padding:6px 12px;font-size:12px}
-.preview-box{background:#36393f;border-radius:8px;padding:16px;border-left:4px solid #5865f2;margin-top:16px}
+.preview-box{background:#2b2d31;border-radius:4px;overflow:hidden;margin-top:16px;display:flex;border:1px solid #1e1f22}
+.preview-bar{width:4px;border-radius:4px 0 0 4px;flex-shrink:0}
+.preview-inner{padding:12px 16px;flex:1;min-width:0}
+.preview-author{font-size:12px;font-weight:600;color:#fff;margin-bottom:4px}
+.preview-title{font-size:15px;font-weight:700;color:#00aff4;margin-bottom:6px}
+.preview-desc{font-size:14px;color:#dbdee1;line-height:1.6;margin-bottom:10px;white-space:pre-wrap}
+.preview-fields{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.preview-field{flex:1;min-width:120px}
+.preview-field-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:2px}
+.preview-field-val{font-size:13px;color:#dbdee1}
+.preview-footer{display:flex;align-items:center;gap:6px;font-size:11px;color:#72767d;margin-top:8px}
+.preview-footer-dot{margin:0 4px}
+.preview-timestamp{font-size:11px;color:#72767d}
 .preview-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:6px}
 .preview-desc{font-size:14px;color:#dcddde;line-height:1.5;margin-bottom:10px}
 .preview-field{margin-bottom:8px}
@@ -210,7 +222,44 @@ function loadModule(module, btn) {
   toggleThumbnailUrl();
   toggleFooterIconUrl();
   renderChamps(config.champs || []);
-  updatePreview();
+  function updatePreview() {
+  const config = getCurrentConfig();
+  const preview = document.getElementById('preview');
+
+  const bar = `<div class="preview-bar" style="background:${config.couleur}"></div>`;
+  let inner = '';
+
+  if (config.titre) inner += `<div class="preview-title">${config.titre}</div>`;
+  if (config.description) inner += `<div class="preview-desc">${config.description}</div>`;
+
+  const champsActifs = config.champs.filter(c => c.actif);
+  if (champsActifs.length > 0) {
+    inner += '<div class="preview-fields">';
+    for (const c of champsActifs) {
+      inner += `<div class="preview-field" style="${c.inline ? '' : 'flex-basis:100%'}">
+        <div class="preview-field-name">${c.nom}</div>
+        <div class="preview-field-val">${c.valeur}</div>
+      </div>`;
+    }
+    inner += '</div>';
+  }
+
+  if (config.image) {
+    inner += `<img src="${config.image}" style="max-width:100%;border-radius:4px;margin-top:8px" onerror="this.style.display='none'">`;
+  }
+
+  let footer = '';
+  if (config.footer) footer += `<span>${config.footer}</span>`;
+  if (config.footer && config.timestamp) footer += `<span class="preview-footer-dot">•</span>`;
+  if (config.timestamp) footer += `<span class="preview-timestamp">${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`;
+  if (footer) inner += `<div class="preview-footer">${footer}</div>`;
+
+  if (!config.titre && !config.description && champsActifs.length === 0) {
+    inner = '<span style="color:#82858f;font-size:13px">Aperçu vide — remplis les champs ci-dessus</span>';
+  }
+
+  preview.innerHTML = `${bar}<div class="preview-inner">${inner}</div>`;
+}
 
   // Aide variables
   document.querySelector('.hint').textContent = `Variables : ${VARIABLES_AIDE[module] || ''}`;
