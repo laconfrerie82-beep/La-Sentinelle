@@ -13,7 +13,13 @@ const REDIRECT_URI = 'https://la-sentinelle-production.up.railway.app/auth/callb
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  etag: false,
+  maxAge: 0,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-store');
+  }
+}));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'jirito-secret',
   resave: false,
