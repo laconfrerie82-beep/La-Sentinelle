@@ -180,5 +180,40 @@ app.post('/api/embeds', requireAuth, requireGuild, (req, res) => {
   res.json({ success: true });
 });
 app.get('/api/embeds/defaults', (req, res) => res.json(DEFAULT_EMBEDS));
+app.post('/api/embeds/publier', requireAuth, requireGuild, async (req, res) => {
+  const { salonId, module } = req.body;
+  if (!salonId) return res.json({ success: false, error: 'Salon manquant' });
 
+  try {
+    const embedData = getEmbeds(req.session.guildId);
+    const config = embedData[module];
+    if (!config) return res.json({ success: false, error: 'Module introuvable' });
+
+    const axios = require('axios');
+    const color = parseInt(config.couleur.replace('#', ''), 16);
+
+    const embed = {
+      title: config.titre || null,
+      description: config.description || null,
+      color: color || 5793266,
+      fields: (config.champs || []).filter(c => c.actif).map(c => ({
+        name: c.nom, value: c.valeur || '\u200b', inline: c.inline
+      })),
+      footer: config.footer ? { text: config.footer } : null,
+      timestamp: config.timestamp ? new Date().toISOString() : null,
+      image: config.image ? { url: config.image } : null,
+    };
+
+    await axios.post(
+      `https://discord.com/api/channels/${salonId}/messages`,
+      { embeds: [embed] },
+      { headers: { Authorization: `Bot ${process.env.DISCORD_TOKEN}`, 'Content-Type': 'application/json' } }
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Erreur publication embed:', err.response?.data || err.message);
+    res.json({ success: false, error: err.response?.data?.message || err.message });
+  }
+});
 app.listen(PORT, () => console.log(`🌐 Panel web démarré sur le port ${PORT}`));
