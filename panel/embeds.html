@@ -176,10 +176,23 @@ select option{background:#1e1f22}
       <div id="preview" class="preview-box"></div>
     </div>
 
-    <div style="display:flex;gap:10px;margin-top:4px">
-      <button class="btn btn-primary" onclick="sauvegarder()">💾 Sauvegarder</button>
-      <button class="btn btn-secondary" onclick="resetModule()">↺ Réinitialiser</button>
-    </div>
+    <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap">
+  <button class="btn btn-primary" onclick="sauvegarder()">💾 Sauvegarder</button>
+  <button class="btn btn-success" onclick="afficherPublier()">📤 Publier dans un salon</button>
+  <button class="btn btn-secondary" onclick="resetModule()">↺ Réinitialiser</button>
+</div>
+
+<div id="publier-box" style="display:none;margin-top:14px;background:#1e1f22;border-radius:8px;padding:16px;border:1px solid #3f4147">
+  <div class="form-group" style="margin-bottom:10px">
+    <label>ID du salon Discord</label>
+    <input type="text" id="publier-salonId" placeholder="Ex: 1234567890123456789">
+    <div class="hint">Clic droit sur le salon → Copier l'identifiant (mode développeur activé)</div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-success" onclick="publierEmbed()">📤 Publier maintenant</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('publier-box').style.display='none'">Annuler</button>
+  </div>
+</div>
   </div>
 </div>
 
@@ -364,7 +377,38 @@ function updatePreview() {
   if (!html) html = '<span style="color:#82858f">Aperçu vide</span>';
   preview.innerHTML = html;
 }
+function afficherPublier() {
+  const box = document.getElementById('publier-box');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
 
+async function publierEmbed() {
+  const salonId = document.getElementById('publier-salonId').value.trim();
+  if (!salonId) return showAlert('❌ Entre l\'ID du salon !', 'error');
+
+  await sauvegarder();
+
+  const res = await fetch('/api/embeds/publier', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ salonId, module: currentModule })
+  }).then(r => r.json());
+
+  if (res.success) {
+    showAlert('✅ Embed publié dans le salon !');
+    document.getElementById('publier-box').style.display = 'none';
+  } else {
+    showAlert(`❌ Erreur : ${res.error}`, 'error');
+  }
+}
+
+function showAlert(msg, type='success') {
+  const el = document.getElementById('alert');
+  el.textContent = msg;
+  el.className = `alert alert-${type}`;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
 async function sauvegarder() {
   embedsData[currentModule] = getCurrentConfig();
   const res = await fetch('/api/embeds', {
