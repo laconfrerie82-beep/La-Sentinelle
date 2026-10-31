@@ -6,501 +6,880 @@
 <title>Jirito Bot — Panel</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1f22;color:#dbdee1;min-height:100vh;display:flex}
-.sidebar{width:240px;background:#2b2d31;min-height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;border-right:1px solid #3f4147}
-.sidebar-header{padding:20px 16px;border-bottom:1px solid #3f4147}
-.bot-info{display:flex;align-items:center;gap:10px}
-.bot-avatar{width:40px;height:40px;background:#5865f2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
-.bot-name{font-size:15px;font-weight:600;color:#fff}
-.bot-status{font-size:12px;color:#23a55a;display:flex;align-items:center;gap:4px}
-.dot{width:8px;height:8px;border-radius:50%;background:#23a55a;display:inline-block}
-.user-info{padding:12px 16px;border-bottom:1px solid #3f4147;display:flex;align-items:center;gap:8px}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:#5865f2;display:flex;align-items:center;justify-content:center;font-size:14px}
-.user-name{font-size:13px;color:#dbdee1}
-.nav{flex:1;padding:8px 8px}
-.nav-section{padding:16px 8px 4px;color:#82858f;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;color:#b5bac1;font-size:13px;border-radius:6px;margin:1px 0;transition:all .15s;text-decoration:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1f22;color:#dbdee1;min-height:100vh}
+a{color:inherit}
+/* ── Sidebar ── */
+.sidebar{width:240px;background:#2b2d31;height:100vh;position:fixed;top:0;left:0;border-right:1px solid #3f4147;display:flex;flex-direction:column}
+.side-head{padding:18px 16px;border-bottom:1px solid #3f4147;display:flex;gap:10px;align-items:center}
+.side-logo{width:40px;height:40px;border-radius:50%;background:#5865f2;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden}
+.side-logo img{width:100%;height:100%;object-fit:cover}
+.side-name{font-size:15px;font-weight:600;color:#fff}
+.side-guild{font-size:12px;color:#b5bac1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.side-switch{font-size:11px;color:#5865f2;text-decoration:none}
+.side-switch:hover{text-decoration:underline}
+.user-line{padding:12px 16px;border-bottom:1px solid #3f4147;display:flex;align-items:center;gap:8px;font-size:13px}
+.user-av{width:28px;height:28px;border-radius:50%;background:#5865f2;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0}
+.nav{flex:1;padding:6px 8px;overflow-y:auto}
+.nav-sec{padding:14px 8px 4px;color:#82858f;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;color:#b5bac1;font-size:13px;border-radius:6px;margin:1px 0;transition:.15s;user-select:none}
 .nav-item:hover{background:#35373c;color:#dbdee1}
 .nav-item.active{background:#404249;color:#fff}
-.nav-item .icon{font-size:18px;width:22px;text-align:center}
-.logout{padding:16px;border-top:1px solid #3f4147}
-.logout a{display:flex;align-items:center;gap:8px;color:#82858f;font-size:13px;text-decoration:none;padding:8px 12px;border-radius:6px;transition:all .15s}
+.nav-item .ic{font-size:17px;width:22px;text-align:center}
+.logout{padding:12px;border-top:1px solid #3f4147}
+.logout a{display:block;color:#82858f;font-size:13px;text-decoration:none;padding:8px 12px;border-radius:6px}
 .logout a:hover{background:#3a1a1a;color:#f28787}
-.main{margin-left:240px;flex:1;display:flex;flex-direction:column}
-.topbar{background:#2b2d31;padding:16px 28px;border-bottom:1px solid #3f4147;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
-.topbar-icon{font-size:22px}
-.topbar-title{font-size:17px;font-weight:600;color:#fff}
-.topbar-desc{font-size:13px;color:#82858f}
-.content{padding:28px;flex:1}
+/* ── Main ── */
+.main{margin-left:240px;min-height:100vh}
+.topbar{background:#2b2d31;padding:14px 28px;border-bottom:1px solid #3f4147;display:flex;align-items:baseline;gap:10px;position:sticky;top:0;z-index:20}
+.topbar .t{font-size:17px;font-weight:600;color:#fff}
+.topbar .d{font-size:13px;color:#82858f}
+.content{padding:24px 28px}
 .panel{display:none}
 .panel.active{display:block}
-.card{background:#2b2d31;border-radius:12px;padding:22px;margin-bottom:18px;border:1px solid #3f4147}
-.card-title{font-size:14px;font-weight:600;color:#dbdee1;margin-bottom:18px;display:flex;align-items:center;gap:8px}
-.card-title .icon{color:#5865f2;font-size:18px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:22px;align-items:start}
+.left{min-width:0}
+.preview-col{position:sticky;top:78px}
+@media(max-width:1250px){.cols{grid-template-columns:1fr}.preview-col{position:static;order:-1}}
+@media(max-width:800px){.sidebar{width:64px}.side-head>div:last-child,.user-line span,.nav-item span.lb,.nav-sec,.logout a span{display:none}.main{margin-left:64px}.content{padding:16px}}
+/* ── Cartes & formulaires ── */
+.card{background:#2b2d31;border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid #3f4147}
+.card-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:#fff}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form-group{margin-bottom:14px}
-label{display:block;color:#b5bac1;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
+label.l,.form-group>label{display:block;color:#b5bac1;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
 input[type=text],input[type=number],select,textarea{width:100%;background:#1e1f22;border:1px solid #3f4147;color:#dbdee1;border-radius:8px;padding:9px 12px;font-size:14px;outline:none;font-family:inherit;transition:border .15s}
 input:focus,select:focus,textarea:focus{border-color:#5865f2}
-textarea{resize:vertical;min-height:90px}
-select option{background:#1e1f22}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #3f4147}
+input[type=color]{width:100%;height:40px;background:#1e1f22;border:1px solid #3f4147;border-radius:8px;padding:4px 6px;cursor:pointer}
+textarea{resize:vertical;min-height:80px}
+select option,select optgroup{background:#1e1f22}
+.hint{font-size:11px;color:#82858f;margin-top:5px;line-height:1.4}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #3f4147;gap:12px}
 .toggle-row:last-of-type{border-bottom:none}
-.toggle-label{font-size:14px;color:#dbdee1}
-.toggle-desc{font-size:12px;color:#82858f;margin-top:2px}
-.switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle-row .tl{font-size:14px}
+.toggle-row .td{font-size:12px;color:#82858f;margin-top:2px}
+.inline-toggle{display:flex;align-items:center;gap:10px;height:40px;font-size:13px;color:#b5bac1}
+.switch{position:relative;width:44px;height:24px;flex-shrink:0;display:inline-block}
 .switch input{opacity:0;width:0;height:0}
 .slider{position:absolute;inset:0;background:#4e5058;border-radius:12px;cursor:pointer;transition:.2s}
 .slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
 input:checked+.slider{background:#5865f2}
 input:checked+.slider:before{transform:translateX(20px)}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
-.btn-primary{background:#5865f2;color:#fff}.btn-primary:hover{background:#4752c4}
-.btn-danger{background:#da3633;color:#fff}.btn-danger:hover{background:#b91c1c}
-.btn-secondary{background:#4e5058;color:#dbdee1}.btn-secondary:hover{background:#6d6f78}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:.15s;color:#fff}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn-primary{background:#5865f2}.btn-primary:hover:not(:disabled){background:#4752c4}
+.btn-success{background:#23a55a}.btn-success:hover:not(:disabled){background:#1a7f44}
+.btn-danger{background:#da3633}.btn-danger:hover:not(:disabled){background:#b91c1c}
+.btn-secondary{background:#4e5058;color:#dbdee1}.btn-secondary:hover:not(:disabled){background:#6d6f78}
 .btn-sm{padding:6px 12px;font-size:12px}
-.btn-success{background:#23a55a;color:#fff}.btn-success:hover{background:#1a7f44}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.sep{height:1px;background:#3f4147;margin:16px 0}
+.sub{font-size:12px;color:#82858f;margin:-8px 0 14px}
+/* ── Champs d'embed ── */
+.champ{background:#1e1f22;border:1px solid #3f4147;border-radius:8px;padding:10px;margin-bottom:8px}
+.champ-top{display:flex;align-items:center;gap:14px;margin-bottom:8px;font-size:12px;color:#b5bac1}
+.champ-top .btn{margin-left:auto}
+.champ-top label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.champ .row2{gap:8px}
+/* ── Listes ── */
+.item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#1e1f22;border:1px solid #3f4147;border-radius:8px;margin-bottom:8px}
+.item .grow{flex:1;min-width:0}
+.item .nm{font-size:13px;font-weight:500}
+.item .ur{font-size:11px;color:#82858f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tag{display:inline-flex;align-items:center;gap:6px;background:#3a1a1a;color:#f28787;padding:4px 10px;border-radius:12px;font-size:12px;margin:3px}
-.tag button{background:none;border:none;color:#f28787;cursor:pointer;font-size:15px;line-height:1;padding:0}
-.stat-card{background:#1e1f22;border-radius:10px;padding:16px;border:1px solid #3f4147}
-.stat-val{font-size:24px;font-weight:700;color:#fff;margin-bottom:3px}
-.stat-label{font-size:12px;color:#82858f}
-.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
-.alert-success{background:#1a3a2a;color:#57f287;border:1px solid #23a55a}
-.alert-error{background:#3a1a1a;color:#f28787;border:1px solid #da3633}
-.badge{display:inline-flex;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:500}
-.badge-green{background:#1a3a2a;color:#57f287}
-.badge-blue{background:#1a1a3a;color:#949cf7}
-.chaine-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#1e1f22;border-radius:8px;margin-bottom:8px;border:1px solid #3f4147}
-.platform-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.yt-bg{background:#3a1a1a}.tw-bg{background:#1a1a3a}.tk-bg{background:#1a2a2a}
-.chaine-info{flex:1;min-width:0}
-.chaine-name{font-size:13px;font-weight:500;color:#dbdee1}
-.chaine-url{font-size:11px;color:#82858f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag button{background:none;border:none;color:#f28787;cursor:pointer;font-size:15px;line-height:1}
+.empty{color:#82858f;font-size:13px;padding:6px 0}
+.addrow{display:flex;gap:8px;align-items:center}
+/* ── Aperçu façon Discord ── */
+.pcard{background:#313338;border:1px solid #3f4147;border-radius:12px;padding:16px}
+.pcard .card-title{margin-bottom:12px}
+.msg{display:flex;gap:12px}
+.msg-av{width:40px;height:40px;border-radius:50%;background:#5865f2;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden}
+.msg-av img{width:100%;height:100%;object-fit:cover}
+.msg-body{min-width:0;flex:1}
+.msg-head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.msg-name{font-size:15px;font-weight:500;color:#fff}
+.app-badge{background:#5865f2;color:#fff;font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px}
+.msg-time{font-size:11px;color:#949ba4}
+.embed{background:#2b2d31;border-left:4px solid #5865f2;border-radius:4px;padding:8px 14px 12px 12px;max-width:100%}
+.embed-grid{display:flex;gap:12px}
+.e-main{flex:1;min-width:0}
+.e-title{font-size:15px;font-weight:600;color:#fff;margin-top:6px;word-break:break-word}
+.e-desc{font-size:14px;color:#dbdee1;margin-top:6px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.e-desc .h1,.e-desc .h2,.e-desc .h3{font-weight:700;color:#fff;display:inline-block}
+.e-desc .h1{font-size:20px}.e-desc .h2{font-size:17px}.e-desc .h3{font-size:15px}
+.e-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.e-field{grid-column:1/-1;min-width:0}
+.e-field.in{grid-column:auto}
+.e-fn{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;word-break:break-word}
+.e-fv{font-size:13px;color:#dbdee1;white-space:pre-wrap;word-break:break-word}
+.e-thumb{width:64px;height:64px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#1e1f22}
+.e-image{max-width:100%;border-radius:6px;margin-top:10px;display:block}
+.e-foot{font-size:11px;color:#949ba4;margin-top:8px}
+.mention{background:rgba(88,101,242,.3);color:#c9cdfb;border-radius:3px;padding:0 3px}
+.link{color:#00a8fc}
+code{background:#1e1f22;padding:1px 4px;border-radius:3px;font-size:13px}
+.e-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.e-btn{background:#4e5058;color:#fff;font-size:13px;padding:6px 14px;border-radius:4px}
+.empty-embed{color:#82858f;font-size:13px;padding:8px 0}
+/* ── Toast ── */
+.toast{position:fixed;right:20px;bottom:20px;z-index:100;max-width:420px;padding:12px 16px;border-radius:10px;font-size:14px;line-height:1.4;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast.show{display:block}
+.toast.success{background:#1a3a2a;color:#57f287;border:1px solid #23a55a}
+.toast.error{background:#3a1a1a;color:#f28787;border:1px solid #da3633}
+.note{background:#1e1f22;border:1px solid #3f4147;border-radius:8px;padding:10px 12px;font-size:12px;color:#b5bac1;line-height:1.5;margin-bottom:14px}
 </style>
 </head>
 <body>
 
 <div class="sidebar">
-  <div class="sidebar-header">
-    <div class="bot-info">
-      <div class="bot-avatar">🤖</div>
-      <div>
-        <div class="bot-name">Jirito Bot</div>
-        <div style="font-size:11px;color:#82858f;margin-top:2px" id="guildName">Chargement...</div>
-        <div class="bot-status"><span class="dot"></span> En ligne</div>
-      </div>
+  <div class="side-head">
+    <div class="side-logo" id="sideLogo">🤖</div>
+    <div>
+      <div class="side-name">Jirito Bot</div>
+      <div class="side-guild" id="sideGuild">Chargement…</div>
+      <a class="side-switch" href="/select-server">Changer de serveur</a>
     </div>
   </div>
-  <div class="user-info">
-    <div class="user-avatar" id="userAvatar">?</div>
-    <div class="user-name" id="userName">Chargement...</div>
-  </div>
+  <div class="user-line"><div class="user-av" id="userAv">?</div><span id="userName">…</span></div>
   <nav class="nav">
-    <div class="nav-section">Général</div>
-    <a class="nav-item active" onclick="show('bienvenue',this)" href="#">
-      <span class="icon">👋</span>Accueil & Bienvenue
-    </a>
-    <a class="nav-item" onclick="show('reglement',this)" href="#">
-      <span class="icon">📋</span>Règlement
-    </a>
-    <div class="nav-section">Communauté</div>
-    <a class="nav-item" onclick="show('niveaux',this)" href="#">
-      <span class="icon">🏆</span>Niveaux & XP
-    </a>
-    <a class="nav-item" onclick="show('automod',this)" href="#">
-      <span class="icon">🛡️</span>Auto-Modération
-    </a>
-    <div class="nav-section">Contenu</div>
-    <a class="nav-item" onclick="show('chaines',this)" href="#">
-      <span class="icon">📺</span>Chaînes & Réseaux
-    </a>
+    <div class="nav-sec">Général</div>
+    <div class="nav-item active" data-panel="bienvenue"><span class="ic">👋</span><span class="lb">Accueil & Bienvenue</span></div>
+    <div class="nav-item" data-panel="reglement"><span class="ic">📋</span><span class="lb">Règlement</span></div>
+    <div class="nav-sec">Communauté</div>
+    <div class="nav-item" data-panel="niveaux"><span class="ic">🏆</span><span class="lb">Niveaux & XP</span></div>
+    <div class="nav-item" data-panel="automod"><span class="ic">🛡️</span><span class="lb">Auto-Modération</span></div>
+    <div class="nav-item" data-panel="sondage"><span class="ic">📊</span><span class="lb">Sondages</span></div>
+    <div class="nav-sec">Contenu</div>
+    <div class="nav-item" data-panel="chaines"><span class="ic">📺</span><span class="lb">Chaînes & Réseaux</span></div>
   </nav>
-  <div class="logout">
-    <a href="/embeds" class="nav-item" style="margin:8px">🎨 Éditeur d'embeds</a>
-    <a href="/auth/logout">🚪 Déconnexion</a>
-  </div>
+  <div class="logout"><a href="/auth/logout">🚪 <span>Déconnexion</span></a></div>
 </div>
 
 <div class="main">
-  <div class="topbar">
-    <span class="topbar-icon" id="topbarIcon">👋</span>
-    <span class="topbar-title" id="topbarTitle">Accueil & Bienvenue</span>
-    <span class="topbar-desc" id="topbarDesc">— Message et salon de bienvenue</span>
-  </div>
-
+  <div class="topbar"><span class="t" id="topTitle"></span><span class="d" id="topDesc"></span></div>
   <div class="content">
-    <div id="alert" class="alert"></div>
 
-    <!-- BIENVENUE -->
+    <!-- ═════════ BIENVENUE ═════════ -->
     <div class="panel active" id="panel-bienvenue">
-      <div class="card">
-        <div class="card-title"><span class="icon">⚙️</span>Configuration de la bienvenue</div>
-        <div class="grid2">
-          <div class="form-group">
-            <label>Salon de bienvenue (ID)</label>
-            <input type="text" id="bv-salonId" placeholder="ID du salon Discord">
+      <div class="cols">
+        <div class="left">
+          <div class="card">
+            <div class="card-title">⚙️ Réglages de la bienvenue</div>
+            <div class="form-group"><label>Salon de bienvenue</label><select class="sel-channel" id="bv-salon" data-empty="— Aucun —"></select></div>
+            <div class="form-group"><label>Message</label><textarea id="bv-message" rows="3"></textarea><div class="hint">Variables : {user} = le membre · {count} = nombre de membres · {serveur} = nom du serveur</div></div>
+            <div class="toggle-row"><div><div class="tl">Bienvenue activée</div></div><label class="switch"><input type="checkbox" id="bv-actif"><span class="slider"></span></label></div>
+            <div class="toggle-row"><div><div class="tl">Mentionner le membre</div></div><label class="switch"><input type="checkbox" id="bv-mention"><span class="slider"></span></label></div>
+            <div class="toggle-row"><div><div class="tl">Afficher en embed</div><div class="td">Sinon le message est envoyé en texte simple</div></div><label class="switch"><input type="checkbox" id="bv-embed"><span class="slider"></span></label></div>
+            <div class="toggle-row"><div><div class="tl">Envoyer aussi un message privé</div></div><label class="switch"><input type="checkbox" id="bv-mp"><span class="slider"></span></label></div>
+            <div class="actions"><button class="btn btn-primary" onclick="saveBienvenue(this)">💾 Sauvegarder les réglages</button></div>
           </div>
-          <div class="form-group" style="display:flex;align-items:flex-end">
-            <div>
-              <label>Statut</label>
-              <div style="display:flex;align-items:center;gap:10px;padding:9px 0">
-                <label class="switch"><input type="checkbox" id="bv-actif"><span class="slider"></span></label>
-                <span style="font-size:13px;color:#b5bac1">Activer la bienvenue</span>
-              </div>
-            </div>
+          <div data-editor="bienvenue"></div>
+          <div class="card">
+            <div class="card-title">📤 Tester dans un salon</div>
+            <div class="sub">Envoie l'embed avec des valeurs d'exemple pour voir le vrai rendu sur Discord.</div>
+            <div class="addrow"><select class="sel-channel" id="pub-bienvenue" data-empty="Choisir un salon…"></select><button class="btn btn-success" onclick="publier('bienvenue','pub-bienvenue',this)">Envoyer</button></div>
           </div>
         </div>
-        <div class="form-group">
-          <label>Message de bienvenue</label>
-          <textarea id="bv-message" placeholder="{user} = mention, {count} = nb membres, {serveur} = nom du serveur"></textarea>
-        </div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Mentionner le membre</div><div class="toggle-desc">Mentionne le nouveau membre dans le message</div></div>
-          <label class="switch"><input type="checkbox" id="bv-mention"><span class="slider"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Afficher en embed</div><div class="toggle-desc">Message avec carte colorée</div></div>
-          <label class="switch"><input type="checkbox" id="bv-embed"><span class="slider"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Message privé</div><div class="toggle-desc">Envoyer aussi un MP au nouveau membre</div></div>
-          <label class="switch"><input type="checkbox" id="bv-mp"><span class="slider"></span></label>
-        </div>
-        <div style="margin-top:18px">
-          <button class="btn btn-primary" onclick="saveBienvenue()">💾 Sauvegarder</button>
-        </div>
+        <div class="preview-col" data-preview="bienvenue"></div>
       </div>
     </div>
 
-    <!-- REGLEMENT -->
+    <!-- ═════════ REGLEMENT ═════════ -->
     <div class="panel" id="panel-reglement">
-      <div class="card">
-        <div class="card-title"><span class="icon">📋</span>Contenu du règlement</div>
-        <div class="grid2">
-          <div class="form-group">
-            <label>Titre</label>
-            <input type="text" id="reg-titre" placeholder="Règlement du serveur">
+      <div class="cols">
+        <div class="left">
+          <div class="card">
+            <div class="card-title">📋 Contenu du règlement</div>
+            <div class="form-group"><label>Titre</label><input type="text" id="reg-titre" maxlength="200"></div>
+            <div class="form-group"><label>Texte du règlement</label><textarea id="reg-contenu" rows="10"></textarea><div class="hint">Markdown Discord accepté : **gras**, *italique*, # titres. Maximum 4000 caractères.</div></div>
+            <div class="row2">
+              <div class="form-group"><label>Réaction d'acceptation</label><input type="text" id="reg-emoji" maxlength="16"></div>
+              <div class="form-group"><label>Rôle donné après acceptation</label><select class="sel-role" id="reg-role" data-empty="— Aucun —"></select></div>
+            </div>
+            <div class="actions"><button class="btn btn-primary" onclick="saveReglement(false,this)">💾 Sauvegarder le texte</button></div>
           </div>
-          <div class="form-group">
-            <label>Rôle d'acceptation (ID)</label>
-            <input type="text" id="reg-roleId" placeholder="ID du rôle à donner">
+          <div data-editor="reglement"></div>
+          <div class="card">
+            <div class="card-title">📤 Publier le règlement</div>
+            <div class="sub">Publie l'embed, ajoute la réaction et enregistre le message : les membres qui réagissent reçoivent le rôle.</div>
+            <div class="addrow"><select class="sel-channel" id="reg-salon" data-empty="Choisir un salon…"></select><button class="btn btn-success" onclick="publier('reglement','reg-salon',this)">Publier</button></div>
+            <div class="actions" id="reg-update-box" style="display:none"><button class="btn btn-secondary" onclick="majReglement(this)">🔄 Mettre à jour le règlement déjà publié</button></div>
+            <div class="hint" id="reg-published"></div>
           </div>
         </div>
-        <div class="form-group">
-          <label>Contenu (markdown supporté)</label>
-          <textarea id="reg-contenu" style="min-height:160px"></textarea>
-        </div>
-        <button class="btn btn-primary" onclick="saveReglement()">💾 Sauvegarder</button>
+        <div class="preview-col" data-preview="reglement"></div>
       </div>
     </div>
 
-    <!-- NIVEAUX -->
+    <!-- ═════════ NIVEAUX ═════════ -->
     <div class="panel" id="panel-niveaux">
-      <div class="grid2" style="margin-bottom:18px">
-        <div class="stat-card"><div class="stat-val" id="stat-xpmsg">15</div><div class="stat-label">XP par message</div></div>
-        <div class="stat-card"><div class="stat-val" id="stat-xpvocal">8</div><div class="stat-label">XP par minute vocal</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="icon">⚙️</span>Configuration XP</div>
-        <div class="grid2">
-          <div class="form-group">
-            <label>XP par message</label>
-            <input type="number" id="niv-xpMsg" min="1" max="100">
+      <div class="cols">
+        <div class="left">
+          <div class="card">
+            <div class="card-title">⚙️ Réglages XP</div>
+            <div class="toggle-row"><div><div class="tl">Système de niveaux activé</div></div><label class="switch"><input type="checkbox" id="niv-actif"><span class="slider"></span></label></div>
+            <div class="row2" style="margin-top:14px">
+              <div class="form-group"><label>XP par message</label><input type="number" id="niv-xpmsg" min="1" max="1000"></div>
+              <div class="form-group"><label>XP par minute en vocal</label><input type="number" id="niv-xpvoc" min="1" max="1000"></div>
+              <div class="form-group"><label>Délai entre deux gains (secondes)</label><input type="number" id="niv-cd" min="0" max="3600"></div>
+              <div class="form-group"><label>Salon des annonces de niveau</label><select class="sel-channel" id="niv-salon" data-empty="— Aucun —"></select></div>
+            </div>
+            <div class="sep"></div>
+            <div class="card-title">🎖️ Rôles par niveau</div>
+            <div id="rewards"></div>
+            <div class="addrow"><input type="number" id="rw-niv" min="1" placeholder="Niveau" style="width:110px"><select class="sel-role" id="rw-role" data-empty="Choisir un rôle…"></select><button class="btn btn-secondary btn-sm" onclick="addReward()">➕ Ajouter</button></div>
+            <div class="actions"><button class="btn btn-primary" onclick="saveNiveaux(this)">💾 Sauvegarder les réglages</button></div>
           </div>
-          <div class="form-group">
-            <label>XP par minute vocal</label>
-            <input type="number" id="niv-xpVocal" min="1" max="100">
-          </div>
-          <div class="form-group">
-            <label>Cooldown messages (sec)</label>
-            <input type="number" id="niv-cooldown" min="0">
-          </div>
-          <div class="form-group">
-            <label>Salon d'annonce (ID)</label>
-            <input type="text" id="niv-salonId" placeholder="ID du salon">
+          <div data-editor="niveau"></div>
+          <div class="card">
+            <div class="card-title">📤 Tester dans un salon</div>
+            <div class="addrow"><select class="sel-channel" id="pub-niveau" data-empty="Choisir un salon…"></select><button class="btn btn-success" onclick="publier('niveau','pub-niveau',this)">Envoyer</button></div>
           </div>
         </div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Système de niveaux actif</div></div>
-          <label class="switch"><input type="checkbox" id="niv-actif"><span class="slider"></span></label>
-        </div>
-        <div style="margin-top:18px">
-          <button class="btn btn-primary" onclick="saveNiveaux()">💾 Sauvegarder</button>
-        </div>
+        <div class="preview-col" data-preview="niveau"></div>
       </div>
     </div>
 
-    <!-- AUTOMOD -->
+    <!-- ═════════ AUTOMOD ═════════ -->
     <div class="panel" id="panel-automod">
-      <div class="card">
-        <div class="card-title"><span class="icon">⚙️</span>Paramètres</div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Auto-modération active</div></div>
-          <label class="switch"><input type="checkbox" id="am-actif"><span class="slider"></span></label>
+      <div class="cols">
+        <div class="left">
+          <div class="card">
+            <div class="card-title">⚙️ Réglages</div>
+            <div class="toggle-row"><div><div class="tl">Auto-modération activée</div></div><label class="switch"><input type="checkbox" id="am-actif"><span class="slider"></span></label></div>
+            <div class="toggle-row"><div><div class="tl">Supprimer le message automatiquement</div></div><label class="switch"><input type="checkbox" id="am-suppr"><span class="slider"></span></label></div>
+            <div class="toggle-row"><div><div class="tl">Prévenir le membre en message privé</div></div><label class="switch"><input type="checkbox" id="am-avert"><span class="slider"></span></label></div>
+            <div class="form-group" style="margin-top:14px"><label>Salon des logs</label><select class="sel-channel" id="am-logs" data-empty="— Aucun —"></select></div>
+            <div class="actions"><button class="btn btn-primary" onclick="saveAutomod(this)">💾 Sauvegarder les réglages</button></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🚫 Mots interdits</div>
+            <div id="mots" style="margin-bottom:12px"></div>
+            <div class="addrow"><input type="text" id="mot-new" placeholder="Ajouter un mot…" maxlength="100"><button class="btn btn-danger btn-sm" onclick="addMot()">➕ Ajouter</button></div>
+          </div>
+          <div data-editor="automod"></div>
+          <div class="card">
+            <div class="card-title">📤 Tester dans un salon</div>
+            <div class="addrow"><select class="sel-channel" id="pub-automod" data-empty="Choisir un salon…"></select><button class="btn btn-success" onclick="publier('automod','pub-automod',this)">Envoyer</button></div>
+          </div>
         </div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Supprimer automatiquement</div></div>
-          <label class="switch"><input type="checkbox" id="am-supprimer"><span class="slider"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Avertir le membre en MP</div></div>
-          <label class="switch"><input type="checkbox" id="am-avertir"><span class="slider"></span></label>
-        </div>
-        <div class="form-group" style="margin-top:14px">
-          <label>Salon de logs (ID)</label>
-          <input type="text" id="am-logsId" placeholder="ID du salon de logs">
-        </div>
-        <button class="btn btn-primary" onclick="saveAutomod()">💾 Sauvegarder</button>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="icon">🚫</span>Mots interdits</div>
-        <div id="mots-list" style="margin-bottom:14px"></div>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="nouveau-mot" placeholder="Ajouter un mot interdit..." style="flex:1">
-          <button class="btn btn-danger btn-sm" onclick="ajouterMot()">+ Ajouter</button>
-        </div>
+        <div class="preview-col" data-preview="automod"></div>
       </div>
     </div>
 
-    <!-- CHAINES -->
-    <div class="panel" id="panel-chaines">
-      <div class="card">
-        <div class="card-title"><span class="icon">➕</span>Ajouter une chaîne</div>
-        <div class="grid2">
-          <div class="form-group">
-            <label>Plateforme</label>
-            <select id="ch-plateforme">
-              <option value="youtube">📺 YouTube</option>
-              <option value="twitch">🟣 Twitch</option>
-              <option value="tiktok">🎵 TikTok</option>
-            </select>
+    <!-- ═════════ SONDAGE ═════════ -->
+    <div class="panel" id="panel-sondage">
+      <div class="cols">
+        <div class="left">
+          <div class="card">
+            <div class="card-title">📊 Créer un sondage</div>
+            <div class="form-group"><label>Question</label><input type="text" id="sd-question" maxlength="200" placeholder="Quel contenu préfères-tu ?"></div>
+            <div class="form-group"><label>Options (une par ligne, de 2 à 10)</label><textarea id="sd-options" rows="5" placeholder="Gaming&#10;Vlogs&#10;Musique"></textarea></div>
+            <div class="row2">
+              <div class="form-group"><label>Salon</label><select class="sel-channel" id="sd-salon" data-empty="Choisir un salon…"></select></div>
+              <div class="form-group"><label>Rôle à mentionner</label><select class="sel-role" id="sd-role" data-empty="— Personne —"></select></div>
+            </div>
+            <div class="actions"><button class="btn btn-success" onclick="publierSondage(this)">📤 Publier le sondage</button></div>
+            <div class="hint">Les membres votent avec les réactions 1️⃣ 2️⃣ 3️⃣…</div>
           </div>
-          <div class="form-group">
-            <label>Nom affiché</label>
-            <input type="text" id="ch-nom" placeholder="Ma chaîne">
-          </div>
+          <div data-editor="sondage"></div>
         </div>
-        <div class="form-group">
-          <label>URL</label>
-          <input type="text" id="ch-url" placeholder="https://...">
-        </div>
-        <button class="btn btn-success" onclick="ajouterChaine()">➕ Ajouter</button>
+        <div class="preview-col" data-preview="sondage"></div>
       </div>
-      <div class="card">
-        <div class="card-title"><span class="icon">📋</span>Chaînes enregistrées</div>
-        <div id="chaines-list"></div>
+    </div>
+
+    <!-- ═════════ CHAINES ═════════ -->
+    <div class="panel" id="panel-chaines">
+      <div class="cols">
+        <div class="left">
+          <div class="card">
+            <div class="card-title">➕ Ajouter une chaîne</div>
+            <div class="row2">
+              <div class="form-group"><label>Plateforme</label><select id="ch-plat"><option value="youtube">📺 YouTube</option><option value="twitch">🟣 Twitch</option><option value="tiktok">🎵 TikTok</option></select></div>
+              <div class="form-group"><label>Nom affiché</label><input type="text" id="ch-nom" maxlength="80"></div>
+            </div>
+            <div class="form-group"><label>Lien</label><input type="text" id="ch-url" placeholder="https://www.youtube.com/@machaine"></div>
+            <div class="form-group"><label>Description (facultatif)</label><input type="text" id="ch-desc" maxlength="200"></div>
+            <div class="row2">
+              <div class="form-group"><label>Salon des annonces</label><select class="sel-channel" id="ch-salon" data-empty="— Aucun —"></select></div>
+              <div class="form-group"><label>Rôle à mentionner</label><select class="sel-role" id="ch-role" data-empty="— Personne —"></select></div>
+            </div>
+            <div class="actions"><button class="btn btn-success" onclick="addChaine(this)">➕ Ajouter la chaîne</button></div>
+          </div>
+          <div class="card">
+            <div class="card-title">📋 Chaînes enregistrées</div>
+            <div id="chaines-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">📢 Annoncer une publication</div>
+            <div class="form-group"><label>Chaîne</label><select id="an-chaine" onchange="onChaineChange()"></select></div>
+            <div class="form-group"><label>Titre de la vidéo / du stream</label><input type="text" id="an-titre" maxlength="200"></div>
+            <div class="form-group"><label>Lien direct</label><input type="text" id="an-url" placeholder="https://…"></div>
+            <div class="form-group"><label>Description (facultatif)</label><textarea id="an-desc" rows="2"></textarea></div>
+            <div class="row2">
+              <div class="form-group"><label>Miniature (URL, facultatif)</label><input type="text" id="an-mini" placeholder="https://…"></div>
+              <div class="form-group"><label>Salon</label><select class="sel-channel" id="an-salon" data-empty="Choisir un salon…"></select></div>
+            </div>
+            <div class="actions"><button class="btn btn-success" onclick="publierAnnonce(this)">📤 Publier l'annonce</button></div>
+            <div class="hint">Le rôle de la chaîne est mentionné automatiquement, avec les boutons « Regarder » et « S'abonner ».</div>
+          </div>
+          <div data-editor="annonce_chaine"></div>
+        </div>
+        <div class="preview-col" data-preview="annonce_chaine"></div>
       </div>
     </div>
 
   </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
+const $ = (id) => document.getElementById(id);
+const KEYCAPS = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+const PLAT = { youtube: '📺', twitch: '🟣', tiktok: '🎵' };
 const PANELS = {
-  bienvenue: { icon:'👋', title:'Accueil & Bienvenue', desc:'— Message et salon de bienvenue' },
-  reglement: { icon:'📋', title:'Règlement', desc:'— Configuration du règlement' },
-  niveaux:   { icon:'🏆', title:'Niveaux & XP', desc:'— Système de points et récompenses' },
-  automod:   { icon:'🛡️', title:'Auto-Modération', desc:'— Filtrage automatique des messages' },
-  chaines:   { icon:'📺', title:'Chaînes & Réseaux', desc:'— YouTube, Twitch, TikTok' },
+  bienvenue: ['Accueil & Bienvenue', 'Message d\'arrivée des nouveaux membres'],
+  reglement: ['Règlement', 'Texte, réaction d\'acceptation et publication'],
+  niveaux:   ['Niveaux & XP', 'Points, récompenses et annonces'],
+  automod:   ['Auto-Modération', 'Mots interdits et logs'],
+  sondage:   ['Sondages', 'Créer un vote avec réactions'],
+  chaines:   ['Chaînes & Réseaux', 'YouTube, Twitch, TikTok'],
+};
+const VARS_HELP = {
+  bienvenue: '{serveur} {message} {count} {userId}',
+  reglement: '{titre} {contenu} {emoji}',
+  niveau: '{userId} {niveau} {serveur}',
+  automod: '{userId} {salonId} {mot} {serveur}',
+  annonce_chaine: '{emoji} {titre} {description} {miniature} {nomChaine} {urlChaine} {url}',
+  sondage: '{question} {options} {userId}',
 };
 
-let config = {};
-let chaines = [];
+let USER = {}, GUILD = {}, CFG = {}, EMBEDS = {}, DEFAULTS = {}, CHANNELS = [], ROLES = [], CHAINES = [], REWARDS = [];
 
-async function init() {
-  // Charger utilisateur
-  const guildInfo = await fetch('/api/guild').then(r=>r.json());
-document.getElementById('guildName').textContent = guildInfo.name;
+/* ───────── Utilitaires ───────── */
+async function api(url, body, method) {
+  const opts = body !== undefined
+    ? { method: method || 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+    : (method ? { method } : {});
+  const r = await fetch(url, opts);
+  if (r.status === 401) { location.href = '/login'; throw new Error('Session expirée'); }
+  if (r.status === 409) { location.href = '/select-server'; throw new Error('Choisis un serveur'); }
+  const ct = r.headers.get('content-type') || '';
+  if (!ct.includes('application/json')) { location.href = '/login'; throw new Error('Session expirée'); }
+  return r.json();
+}
+function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg, type) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || 'success');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.className = 'toast'; }, type === 'error' ? 9000 : 3500);
+}
+function busy(btn, on) { if (btn) btn.disabled = on; }
+function fillVars(str, vars) {
+  let s = String(str ?? '');
+  for (const [k, v] of Object.entries(vars)) s = s.split('{' + k + '}').join(String(v ?? ''));
+  return s;
+}
+function avatarUrl() { return USER.avatar ? `https://cdn.discordapp.com/avatars/${USER.id}/${USER.avatar}.png?size=128` : ''; }
+function guildIcon() { return GUILD.icon ? `https://cdn.discordapp.com/icons/${GUILD.id}/${GUILD.icon}.png?size=128` : ''; }
+const chanName = (id) => (CHANNELS.find(c => c.id === id) || {}).name || 'salon';
+const roleName = (id) => (ROLES.find(r => r.id === id) || {}).name || 'rôle';
 
-  // Charger config
-  config = await fetch('/api/config').then(r=>r.json());
-  applyConfig();
-
-  // Charger chaînes
-  loadChaines();
+/* Rendu Markdown Discord simplifié (pour l'aperçu) */
+function md(s) {
+  let h = esc(s);
+  h = h.replace(/^(#{1,3}) (.+)$/gm, (m, hs, t) => `<span class="h${hs.length}">${t}</span>`)
+    .replace(/&lt;@&amp;(\d+)&gt;/g, (m, id) => `<span class="mention">@${esc(roleName(id))}</span>`)
+    .replace(/&lt;@!?(\d+)&gt;/g, (m, id) => `<span class="mention">@${id === USER.id ? esc(USER.username) : 'membre'}</span>`)
+    .replace(/&lt;#(\d+)&gt;/g, (m, id) => `<span class="mention">#${esc(chanName(id))}</span>`)
+    .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/__([^_\n]+)__/g, '<u>$1</u>')
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<span class="link">$1</span>');
+  return h;
 }
 
-function applyConfig() {
-  // Bienvenue
-  document.getElementById('bv-salonId').value = config.bienvenue?.salonId || '';
-  document.getElementById('bv-actif').checked = config.bienvenue?.actif || false;
-  document.getElementById('bv-message').value = config.bienvenue?.message || '';
-  document.getElementById('bv-mention').checked = config.bienvenue?.mention || false;
-  document.getElementById('bv-embed').checked = config.bienvenue?.embed || false;
-  document.getElementById('bv-mp').checked = config.bienvenue?.mp || false;
+/* ───────── Navigation ───────── */
+function showPanel(id) {
+  if (!PANELS[id]) id = 'bienvenue';
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + id));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.panel === id));
+  $('topTitle').textContent = PANELS[id][0];
+  $('topDesc').textContent = '— ' + PANELS[id][1];
+  history.replaceState(null, '', '#' + id);
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => showPanel(n.dataset.panel)));
 
-  // Règlement
-  document.getElementById('reg-titre').value = config.reglement?.titre || '';
-  document.getElementById('reg-contenu').value = config.reglement?.contenu || '';
-  document.getElementById('reg-roleId').value = config.reglement?.roleAcceptationId || '';
-
-  // Niveaux
-  const niv = config.niveaux || {};
-  document.getElementById('niv-xpMsg').value = niv.xpParMessage || 15;
-  document.getElementById('niv-xpVocal').value = niv.xpParMinuteVocal || 8;
-  document.getElementById('niv-cooldown').value = niv.cooldownMessages || 60;
-  document.getElementById('niv-salonId').value = niv.salonAnnonceId || '';
-  document.getElementById('niv-actif').checked = niv.actif || false;
-  document.getElementById('stat-xpmsg').textContent = niv.xpParMessage || 15;
-  document.getElementById('stat-xpvocal').textContent = niv.xpParMinuteVocal || 8;
-
-  // AutoMod
-  const am = config.automod || {};
-  document.getElementById('am-actif').checked = am.actif || false;
-  document.getElementById('am-supprimer').checked = am.supprimerAuto || false;
-  document.getElementById('am-avertir').checked = am.avertirMembre || false;
-  document.getElementById('am-logsId').value = am.salonLogsId || '';
-  renderMots(am.motsInterdits || []);
+/* ───────── Listes déroulantes ───────── */
+function populateSelects() {
+  document.querySelectorAll('select.sel-channel').forEach(sel => {
+    const groups = {};
+    CHANNELS.forEach(c => { (groups[c.category || ''] = groups[c.category || ''] || []).push(c); });
+    let html = `<option value="">${esc(sel.dataset.empty || '—')}</option>`;
+    for (const [cat, list] of Object.entries(groups)) {
+      const opts = list.map(c => `<option value="${c.id}"># ${esc(c.name)}</option>`).join('');
+      html += cat ? `<optgroup label="${esc(cat)}">${opts}</optgroup>` : opts;
+    }
+    sel.innerHTML = html;
+  });
+  document.querySelectorAll('select.sel-role').forEach(sel => {
+    sel.innerHTML = `<option value="">${esc(sel.dataset.empty || '—')}</option>` +
+      ROLES.map(r => `<option value="${r.id}">@ ${esc(r.name)}</option>`).join('');
+  });
+}
+function setSel(id, value) {
+  const el = $(id);
+  if (!el) return;
+  value = value || '';
+  if (value && ![...el.options].some(o => o.value === value)) {
+    el.insertAdjacentHTML('beforeend', `<option value="${esc(value)}">(introuvable ou privé) ${esc(value)}</option>`);
+  }
+  el.value = value;
 }
 
-function show(id, el) {
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  el.classList.add('active');
-  const p = PANELS[id];
-  document.getElementById('topbarIcon').textContent = p.icon;
-  document.getElementById('topbarTitle').textContent = p.title;
-  document.getElementById('topbarDesc').textContent = p.desc;
-}
-
-function showAlert(msg, type='success') {
-  const el = document.getElementById('alert');
-  el.textContent = msg;
-  el.className = `alert alert-${type}`;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display='none', 3000);
-}
-
-async function saveBienvenue() {
-  const res = await fetch('/api/config/bienvenue', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      actif: document.getElementById('bv-actif').checked,
-      salonId: document.getElementById('bv-salonId').value,
-      message: document.getElementById('bv-message').value,
-      mention: document.getElementById('bv-mention').checked,
-      embed: document.getElementById('bv-embed').checked,
-      mp: document.getElementById('bv-mp').checked,
-    })
-  }).then(r=>r.json());
-  res.success ? showAlert('✅ Bienvenue sauvegardée !') : showAlert('❌ Erreur', 'error');
-}
-
-async function saveReglement() {
-  const res = await fetch('/api/config/reglement', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      titre: document.getElementById('reg-titre').value,
-      contenu: document.getElementById('reg-contenu').value,
-      roleAcceptationId: document.getElementById('reg-roleId').value,
-    })
-  }).then(r=>r.json());
-  res.success ? showAlert('✅ Règlement sauvegardé !') : showAlert('❌ Erreur', 'error');
-}
-
-async function saveNiveaux() {
-  const xpMsg = document.getElementById('niv-xpMsg').value;
-  const xpVocal = document.getElementById('niv-xpVocal').value;
-  const res = await fetch('/api/config/niveaux', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      actif: document.getElementById('niv-actif').checked,
-      xpParMessage: xpMsg,
-      xpParMinuteVocal: xpVocal,
-      cooldownMessages: document.getElementById('niv-cooldown').value,
-      salonAnnonceId: document.getElementById('niv-salonId').value,
-    })
-  }).then(r=>r.json());
-  if (res.success) {
-    document.getElementById('stat-xpmsg').textContent = xpMsg;
-    document.getElementById('stat-xpvocal').textContent = xpVocal;
-    showAlert('✅ Niveaux sauvegardés !');
-  } else showAlert('❌ Erreur', 'error');
-}
-
-async function saveAutomod() {
-  const res = await fetch('/api/config/automod', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      actif: document.getElementById('am-actif').checked,
-      supprimerAuto: document.getElementById('am-supprimer').checked,
-      avertirMembre: document.getElementById('am-avertir').checked,
-      salonLogsId: document.getElementById('am-logsId').value,
-    })
-  }).then(r=>r.json());
-  res.success ? showAlert('✅ AutoMod sauvegardé !') : showAlert('❌ Erreur', 'error');
-}
-
-function renderMots(mots) {
-  const el = document.getElementById('mots-list');
-  el.innerHTML = mots.length === 0 ? '<span style="color:#82858f;font-size:13px">Aucun mot interdit.</span>' :
-    mots.map(m => `<span class="tag">${m} <button onclick="supprimerMot('${m}')">×</button></span>`).join('');
-}
-
-async function ajouterMot() {
-  const mot = document.getElementById('nouveau-mot').value.trim();
-  if (!mot) return;
-  const res = await fetch('/api/config/automod/mot', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ action:'ajouter', mot })
-  }).then(r=>r.json());
-  if (res.success) { renderMots(res.mots); document.getElementById('nouveau-mot').value=''; }
-}
-
-async function supprimerMot(mot) {
-  const res = await fetch('/api/config/automod/mot', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ action:'supprimer', mot })
-  }).then(r=>r.json());
-  if (res.success) renderMots(res.mots);
-}
-
-// Chaînes (stockage localStorage pour la démo)
-function loadChaines() {
-  chaines = JSON.parse(localStorage.getItem('jirito-chaines') || '[]');
-  renderChaines();
-}
-
-function renderChaines() {
-  const el = document.getElementById('chaines-list');
-  if (chaines.length === 0) { el.innerHTML = '<span style="color:#82858f;font-size:13px">Aucune chaîne enregistrée.</span>'; return; }
-  const icons = { youtube:'📺', twitch:'🟣', tiktok:'🎵' };
-  const bgs = { youtube:'yt-bg', twitch:'tw-bg', tiktok:'tk-bg' };
-  el.innerHTML = chaines.map((c,i) => `
-    <div class="chaine-row">
-      <div class="platform-icon ${bgs[c.plateforme]}">${icons[c.plateforme]}</div>
-      <div class="chaine-info">
-        <div class="chaine-name">${c.nom}</div>
-        <div class="chaine-url">${c.url}</div>
-      </div>
-      <span class="badge badge-green">Actif</span>
-      <button class="btn btn-danger btn-sm" onclick="supprimerChaine(${i})" style="margin-left:8px">🗑️</button>
+/* ───────── Éditeur d'embed (un par onglet) ───────── */
+function editorHTML(mod) {
+  const id = (s) => `${mod}__${s}`;
+  return `
+  <div class="card">
+    <div class="card-title">🎨 Apparence de l'embed</div>
+    <div class="row2">
+      <div class="form-group"><label>Couleur</label><input type="color" id="${id('couleur')}"></div>
+      <div class="form-group"><label>Heure</label><div class="inline-toggle"><label class="switch"><input type="checkbox" id="${id('timestamp')}"><span class="slider"></span></label>Afficher l'heure d'envoi</div></div>
     </div>
-  `).join('');
+    <div class="form-group"><label>Titre</label><input type="text" id="${id('titre')}" maxlength="256"></div>
+    <div class="form-group"><label>Description</label><textarea id="${id('description')}" rows="4"></textarea><div class="hint">Variables disponibles : ${VARS_HELP[mod]}</div></div>
+    <div class="form-group"><label>Grande image (URL)</label><input type="text" id="${id('image')}" placeholder="https://…"></div>
+    <div class="row2">
+      <div class="form-group"><label>Petite image (en haut à droite)</label>
+        <select id="${id('thumbnail')}"><option value="aucun">Aucune</option><option value="avatar">Avatar du membre</option><option value="serveur">Icône du serveur</option><option value="custom">Image personnalisée</option></select></div>
+      <div class="form-group" id="${id('thumbnailUrl-g')}"><label>URL de l'image</label><input type="text" id="${id('thumbnailUrl')}" placeholder="https://…"></div>
+    </div>
+    <div class="form-group"><label>Pied de page</label><input type="text" id="${id('footer')}" maxlength="2048"></div>
+    <div class="row2">
+      <div class="form-group"><label>Icône du pied de page</label>
+        <select id="${id('footerIcon')}"><option value="aucun">Aucune</option><option value="serveur">Icône du serveur</option><option value="custom">Image personnalisée</option></select></div>
+      <div class="form-group" id="${id('footerIconUrl-g')}"><label>URL de l'icône</label><input type="text" id="${id('footerIconUrl')}" placeholder="https://…"></div>
+    </div>
+    <label class="l">Champs</label>
+    <div id="${id('champs')}"></div>
+    <button class="btn btn-secondary btn-sm" data-act="add-champ">➕ Ajouter un champ</button>
+    <div class="actions">
+      <button class="btn btn-primary" data-act="save-embed">💾 Sauvegarder l'embed</button>
+      <button class="btn btn-secondary" data-act="reset-embed">↺ Revenir au modèle d'origine</button>
+    </div>
+  </div>`;
 }
 
-function ajouterChaine() {
-  const nom = document.getElementById('ch-nom').value.trim();
-  const url = document.getElementById('ch-url').value.trim();
-  const plateforme = document.getElementById('ch-plateforme').value;
-  if (!nom || !url) return showAlert('❌ Remplis le nom et l\'URL', 'error');
-  chaines.push({ nom, url, plateforme });
-  localStorage.setItem('jirito-chaines', JSON.stringify(chaines));
+function loadEditor(mod) {
+  const e = EMBEDS[mod], q = (s) => $(`${mod}__${s}`);
+  q('couleur').value = /^#[0-9a-fA-F]{6}$/.test(e.couleur) ? e.couleur : '#5865F2';
+  q('timestamp').checked = !!e.timestamp;
+  q('titre').value = e.titre || '';
+  q('description').value = e.description || '';
+  q('image').value = e.image || '';
+  q('thumbnail').value = e.thumbnail || 'aucun';
+  q('thumbnailUrl').value = e.thumbnailUrl || '';
+  q('footer').value = e.footer || '';
+  q('footerIcon').value = e.footerIcon || 'aucun';
+  q('footerIconUrl').value = e.footerIconUrl || '';
+  renderChamps(mod);
+  toggleUrlFields(mod);
+  renderPreview(mod);
+}
+function readEditor(mod) {
+  const q = (s) => $(`${mod}__${s}`);
+  const champs = [...$(`${mod}__champs`).querySelectorAll('.champ')].map(row => ({
+    actif: row.querySelector('.c-actif').checked,
+    inline: row.querySelector('.c-inline').checked,
+    nom: row.querySelector('.c-nom').value,
+    valeur: row.querySelector('.c-val').value,
+  }));
+  EMBEDS[mod] = {
+    couleur: q('couleur').value, timestamp: q('timestamp').checked,
+    titre: q('titre').value, description: q('description').value, image: q('image').value,
+    thumbnail: q('thumbnail').value, thumbnailUrl: q('thumbnailUrl').value,
+    footer: q('footer').value, footerIcon: q('footerIcon').value, footerIconUrl: q('footerIconUrl').value,
+    champs,
+  };
+}
+function renderChamps(mod) {
+  $(`${mod}__champs`).innerHTML = (EMBEDS[mod].champs || []).map((c, i) => `
+    <div class="champ" data-i="${i}">
+      <div class="champ-top">
+        <label><input type="checkbox" class="c-actif" ${c.actif ? 'checked' : ''}> Actif</label>
+        <label><input type="checkbox" class="c-inline" ${c.inline ? 'checked' : ''}> Sur la même ligne</label>
+        <button class="btn btn-danger btn-sm" data-act="del-champ" data-i="${i}">🗑️</button>
+      </div>
+      <div class="row2"><input type="text" class="c-nom" placeholder="Nom" value="${esc(c.nom)}"><input type="text" class="c-val" placeholder="Valeur" value="${esc(c.valeur)}"></div>
+    </div>`).join('');
+}
+function toggleUrlFields(mod) {
+  $(`${mod}__thumbnailUrl-g`).style.display = $(`${mod}__thumbnail`).value === 'custom' ? '' : 'none';
+  $(`${mod}__footerIconUrl-g`).style.display = $(`${mod}__footerIcon`).value === 'custom' ? '' : 'none';
+}
+
+async function sauverEmbeds(silent, btn) {
+  busy(btn, true);
+  try {
+    const r = await api('/api/embeds', EMBEDS);
+    if (!r.success) throw new Error(r.error || 'Échec de la sauvegarde');
+    if (!silent) toast('✅ Embed sauvegardé');
+  } finally { busy(btn, false); }
+}
+
+function bindEditor(el) {
+  const mod = el.dataset.editor;
+  el.innerHTML = editorHTML(mod);
+  el.addEventListener('input', () => { readEditor(mod); renderPreview(mod); });
+  el.addEventListener('change', () => { readEditor(mod); toggleUrlFields(mod); renderPreview(mod); });
+  el.addEventListener('click', async (ev) => {
+    const b = ev.target.closest('[data-act]');
+    if (!b) return;
+    const act = b.dataset.act;
+    if (act === 'add-champ') {
+      readEditor(mod);
+      if (EMBEDS[mod].champs.length >= 25) return toast('25 champs maximum', 'error');
+      EMBEDS[mod].champs.push({ actif: true, nom: 'Nouveau champ', valeur: 'Valeur', inline: true });
+      renderChamps(mod); renderPreview(mod);
+    } else if (act === 'del-champ') {
+      readEditor(mod);
+      EMBEDS[mod].champs.splice(parseInt(b.dataset.i, 10), 1);
+      renderChamps(mod); renderPreview(mod);
+    } else if (act === 'save-embed') {
+      try { await sauverEmbeds(false, b); } catch (e) { toast('❌ ' + e.message, 'error'); }
+    } else if (act === 'reset-embed') {
+      if (!confirm('Revenir au modèle d\'origine pour cet embed ? (pense à sauvegarder ensuite)')) return;
+      EMBEDS[mod] = JSON.parse(JSON.stringify(DEFAULTS[mod]));
+      loadEditor(mod);
+      toast('Modèle d\'origine rechargé — clique sur Sauvegarder pour l\'appliquer');
+    }
+  });
+}
+
+/* ───────── Aperçu (colonne de droite) ───────── */
+function buildPreviewShell(el) {
+  const mod = el.dataset.preview;
+  el.innerHTML = `
+    <div class="pcard">
+      <div class="card-title">👁️ Aperçu en direct</div>
+      <div class="msg">
+        <div class="msg-av" id="pav-${mod}">🤖</div>
+        <div class="msg-body">
+          <div class="msg-head"><span class="msg-name">Jirito Bot</span><span class="app-badge">APP</span><span class="msg-time">Aujourd'hui</span></div>
+          <div class="embed-slot" id="slot-${mod}"></div>
+        </div>
+      </div>
+      <div class="hint" style="margin-top:12px">Les variables comme {user} sont remplacées par des exemples.</div>
+    </div>`;
+}
+
+function sampleVars(mod) {
+  const base = { serveur: GUILD.name || 'Mon serveur', userId: USER.id, user: USER.username, avatarUrl: avatarUrl(), serveurIcon: guildIcon() };
+  if (mod === 'bienvenue') {
+    const msg = ($('bv-message') ? $('bv-message').value : '')
+      .split('{user}').join(`<@${USER.id}>`).split('{count}').join('128').split('{serveur}').join(base.serveur);
+    return { ...base, count: 128, message: msg };
+  }
+  if (mod === 'reglement') {
+    return { ...base, titre: $('reg-titre').value, contenu: $('reg-contenu').value, emoji: $('reg-emoji').value || '✅' };
+  }
+  if (mod === 'niveau') return { ...base, niveau: 5 };
+  if (mod === 'automod') return { ...base, salonId: '0', mot: 'exemple' };
+  if (mod === 'sondage') {
+    const lines = $('sd-options').value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 10);
+    const list = lines.length ? lines : ['Option A', 'Option B'];
+    return { ...base, question: $('sd-question').value || 'Ta question ici', options: list.map((o, i) => `${KEYCAPS[i]} ${o}`).join('\n') };
+  }
+  if (mod === 'annonce_chaine') {
+    const c = CHAINES.find(x => String(x.id) === $('an-chaine').value);
+    return {
+      ...base,
+      emoji: c ? PLAT[c.plateforme] : '📺',
+      titre: $('an-titre').value || 'Titre de la vidéo',
+      description: $('an-desc').value || `Nouvelle publication de **${c ? c.nom : 'ta chaîne'}** !`,
+      miniature: $('an-mini').value || '',
+      nomChaine: c ? c.nom : 'Ma chaîne',
+      urlChaine: c ? c.url : 'https://youtube.com',
+      url: $('an-url').value || 'https://youtube.com',
+    };
+  }
+  return base;
+}
+
+function renderPreview(mod) {
+  const slot = $('slot-' + mod), e = EMBEDS[mod];
+  if (!slot || !e) return;
+  const v = sampleVars(mod), f = (s) => fillVars(s || '', v);
+  const color = /^#[0-9a-fA-F]{6}$/.test(e.couleur) ? e.couleur : '#5865F2';
+  const title = f(e.titre), desc = f(e.description);
+  let main = '';
+  if (title) main += `<div class="e-title">${md(title)}</div>`;
+  if (desc) main += `<div class="e-desc">${md(desc)}</div>`;
+  const champs = (e.champs || []).filter(c => c.actif);
+  if (champs.length) {
+    main += '<div class="e-fields">' + champs.map(c =>
+      `<div class="e-field ${c.inline ? 'in' : ''}"><div class="e-fn">${md(f(c.nom))}</div><div class="e-fv">${md(f(c.valeur))}</div></div>`).join('') + '</div>';
+  }
+  const img = f(e.image);
+  if (/^https?:\/\//.test(img)) main += `<img class="e-image" src="${esc(img)}" onerror="this.style.display='none'">`;
+  const foot = f(e.footer);
+  const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  if (foot || e.timestamp) main += `<div class="e-foot">${esc(foot)}${foot && e.timestamp ? ' • ' : ''}${e.timestamp ? 'Aujourd\'hui à ' + time : ''}</div>`;
+
+  let thumb = '';
+  const tUrl = e.thumbnail === 'avatar' ? v.avatarUrl : e.thumbnail === 'serveur' ? v.serveurIcon : e.thumbnail === 'custom' ? e.thumbnailUrl : '';
+  if (e.thumbnail !== 'aucun') {
+    thumb = /^https?:\/\//.test(tUrl || '') ? `<img class="e-thumb" src="${esc(tUrl)}" onerror="this.style.visibility='hidden'">` : '<div class="e-thumb"></div>';
+  }
+  if (!title && !desc && !champs.length) {
+    slot.innerHTML = '<div class="empty-embed">Embed vide — ajoute un titre, une description ou un champ.</div>';
+    return;
+  }
+  let extra = '';
+  if (mod === 'annonce_chaine') extra = '<div class="e-buttons"><span class="e-btn">▶ Regarder</span><span class="e-btn">🔔 S\'abonner</span></div>';
+  slot.innerHTML = `<div class="embed" style="border-left-color:${color}"><div class="embed-grid"><div class="e-main">${main}</div>${thumb}</div></div>${extra}`;
+}
+function refreshPreviews() { Object.keys(EMBEDS).forEach(renderPreview); }
+
+/* ───────── Réglages : Bienvenue ───────── */
+async function saveBienvenue(btn) {
+  busy(btn, true);
+  try {
+    const r = await api('/api/config/bienvenue', {
+      actif: $('bv-actif').checked, salonId: $('bv-salon').value, message: $('bv-message').value,
+      mention: $('bv-mention').checked, embed: $('bv-embed').checked, mp: $('bv-mp').checked,
+    });
+    r.success ? toast('✅ Réglages de bienvenue sauvegardés') : toast('❌ ' + (r.error || 'Erreur'), 'error');
+  } catch (e) { toast('❌ ' + e.message, 'error'); } finally { busy(btn, false); }
+}
+
+/* ───────── Réglages : Règlement ───────── */
+async function saveReglement(silent, btn) {
+  busy(btn, true);
+  try {
+    const r = await api('/api/config/reglement', {
+      titre: $('reg-titre').value, contenu: $('reg-contenu').value,
+      roleAcceptationId: $('reg-role').value, emoji: $('reg-emoji').value,
+    });
+    if (!r.success) throw new Error(r.error || 'Erreur');
+    if (!silent) toast('✅ Règlement sauvegardé');
+  } catch (e) { if (silent) throw e; toast('❌ ' + e.message, 'error'); } finally { busy(btn, false); }
+}
+function refreshRegInfo() {
+  const r = CFG.reglement || {};
+  $('reg-update-box').style.display = r.messageId ? '' : 'none';
+  $('reg-published').textContent = r.messageId ? `Règlement actuellement publié dans #${chanName(r.salonId)}.` : 'Aucun règlement publié pour le moment.';
+}
+async function majReglement(btn) {
+  const r = CFG.reglement || {};
+  if (!r.salonId || !r.messageId) return toast('Aucun règlement publié à mettre à jour.', 'error');
+  await publier('reglement', null, btn, { update: true, salonId: r.salonId });
+}
+
+/* ───────── Réglages : Niveaux ───────── */
+function renderRewards() {
+  $('rewards').innerHTML = REWARDS.length
+    ? REWARDS.map((r, i) => `<div class="item"><div class="grow"><span class="nm">Niveau ${r.niveau}</span> → <span class="mention">@${esc(roleName(r.roleId))}</span></div><button class="btn btn-danger btn-sm" onclick="delReward(${i})">🗑️</button></div>`).join('')
+    : '<div class="empty">Aucun rôle automatique pour le moment.</div>';
+}
+function addReward() {
+  const niveau = parseInt($('rw-niv').value, 10), roleId = $('rw-role').value;
+  if (!niveau || niveau < 1 || !roleId) return toast('Indique un niveau et choisis un rôle.', 'error');
+  REWARDS = REWARDS.filter(r => r.niveau !== niveau).concat({ niveau, roleId }).sort((a, b) => a.niveau - b.niveau);
+  $('rw-niv').value = ''; $('rw-role').value = '';
+  renderRewards();
+  toast('Rôle ajouté — clique sur Sauvegarder les réglages pour l\'enregistrer');
+}
+function delReward(i) { REWARDS.splice(i, 1); renderRewards(); }
+async function saveNiveaux(btn) {
+  busy(btn, true);
+  try {
+    const r = await api('/api/config/niveaux', {
+      actif: $('niv-actif').checked, xpParMessage: $('niv-xpmsg').value, xpParMinuteVocal: $('niv-xpvoc').value,
+      cooldownMessages: $('niv-cd').value, salonAnnonceId: $('niv-salon').value, recompenses: REWARDS,
+    });
+    r.success ? toast('✅ Réglages des niveaux sauvegardés') : toast('❌ ' + (r.error || 'Erreur'), 'error');
+  } catch (e) { toast('❌ ' + e.message, 'error'); } finally { busy(btn, false); }
+}
+
+/* ───────── Réglages : Automod ───────── */
+async function saveAutomod(btn) {
+  busy(btn, true);
+  try {
+    const r = await api('/api/config/automod', {
+      actif: $('am-actif').checked, supprimerAuto: $('am-suppr').checked,
+      avertirMembre: $('am-avert').checked, salonLogsId: $('am-logs').value,
+    });
+    r.success ? toast('✅ Réglages d\'auto-modération sauvegardés') : toast('❌ ' + (r.error || 'Erreur'), 'error');
+  } catch (e) { toast('❌ ' + e.message, 'error'); } finally { busy(btn, false); }
+}
+function renderMots(mots) {
+  $('mots').innerHTML = mots.length
+    ? mots.map(m => `<span class="tag">${esc(m)} <button data-mot="${esc(m)}" title="Retirer">×</button></span>`).join('')
+    : '<div class="empty">Aucun mot interdit.</div>';
+}
+$('mots').addEventListener('click', async (ev) => {
+  const b = ev.target.closest('button[data-mot]');
+  if (!b) return;
+  const r = await api('/api/config/automod/mot', { action: 'supprimer', mot: b.dataset.mot });
+  if (r.success) renderMots(r.mots);
+});
+async function addMot() {
+  const mot = $('mot-new').value.trim();
+  if (!mot) return;
+  const r = await api('/api/config/automod/mot', { action: 'ajouter', mot });
+  if (r.success) { renderMots(r.mots); $('mot-new').value = ''; } else toast('❌ ' + (r.error || 'Erreur'), 'error');
+}
+$('mot-new').addEventListener('keydown', (e) => { if (e.key === 'Enter') addMot(); });
+
+/* ───────── Chaînes ───────── */
+function renderChaines() {
+  $('chaines-list').innerHTML = CHAINES.length
+    ? CHAINES.map(c => `<div class="item"><span>${PLAT[c.plateforme] || '📺'}</span><div class="grow"><div class="nm">${esc(c.nom)} <span class="hint">#${c.id}</span></div><div class="ur">${esc(c.url)}</div></div><button class="btn btn-danger btn-sm" onclick="delChaine(${c.id})">🗑️</button></div>`).join('')
+    : '<div class="empty">Aucune chaîne enregistrée.</div>';
+  const sel = $('an-chaine'), cur = sel.value;
+  sel.innerHTML = CHAINES.length
+    ? CHAINES.map(c => `<option value="${c.id}">${PLAT[c.plateforme] || ''} ${esc(c.nom)}</option>`).join('')
+    : '<option value="">Ajoute d\'abord une chaîne</option>';
+  if (cur && CHAINES.some(c => String(c.id) === cur)) sel.value = cur;
+  onChaineChange(true);
+}
+function onChaineChange(keepSalon) {
+  const c = CHAINES.find(x => String(x.id) === $('an-chaine').value);
+  if (c && c.salonAnnonceId && !keepSalon) setSel('an-salon', c.salonAnnonceId);
+  if (c && c.salonAnnonceId && keepSalon && !$('an-salon').value) setSel('an-salon', c.salonAnnonceId);
+  renderPreview('annonce_chaine');
+}
+async function addChaine(btn) {
+  busy(btn, true);
+  try {
+    const r = await api('/api/chaines', {
+      plateforme: $('ch-plat').value, nom: $('ch-nom').value, url: $('ch-url').value, description: $('ch-desc').value,
+      salonAnnonceId: $('ch-salon').value, roleMentionId: $('ch-role').value,
+    });
+    if (!r.success) return toast('❌ ' + r.error, 'error');
+    CHAINES = r.chaines;
+    ['ch-nom', 'ch-url', 'ch-desc'].forEach(id => { $(id).value = ''; });
+    renderChaines();
+    toast('✅ Chaîne ajoutée');
+  } catch (e) { toast('❌ ' + e.message, 'error'); } finally { busy(btn, false); }
+}
+async function delChaine(id) {
+  if (!confirm('Supprimer cette chaîne de la liste ?')) return;
+  const r = await api('/api/chaines/' + id, undefined, 'DELETE');
+  if (r.success) { CHAINES = r.chaines; renderChaines(); toast('Chaîne supprimée'); }
+}
+
+/* ───────── Publication ───────── */
+async function publier(mod, selId, btn, extra) {
+  extra = extra || {};
+  const salonId = extra.salonId || (selId ? $(selId).value : '');
+  if (!salonId) return toast('Choisis d\'abord un salon dans la liste.', 'error');
+  busy(btn, true);
+  try {
+    await sauverEmbeds(true);
+    if (mod === 'reglement') await saveReglement(true);
+    const variables = sampleVars(mod);
+    if (mod === 'automod') variables.salonId = salonId;
+    const r = await api('/api/embeds/publier', { module: mod, salonId, variables, ...extra });
+    if (!r.success) return toast('❌ ' + r.error, 'error');
+    if (mod === 'reglement') {
+      CFG = await api('/api/config');
+      refreshRegInfo();
+    }
+    toast(r.warning ? '⚠️ ' + r.warning : (extra.update ? '✅ Règlement mis à jour' : '✅ Publié dans #' + chanName(salonId)), r.warning ? 'error' : 'success');
+  } catch (e) { toast('❌ ' + e.message, 'error'); } finally { busy(btn, false); }
+}
+
+async function publierSondage(btn) {
+  const question = $('sd-question').value.trim();
+  const options = $('sd-options').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const salonId = $('sd-salon').value;
+  if (!question) return toast('Écris la question du sondage.', 'error');
+  if (options.length < 2 || options.length > 10) return toast('Il faut entre 2 et 10 options (une par ligne).', 'error');
+  if (!salonId) return toast('Choisis un salon.', 'error');
+  busy(btn, true);
+  try {
+    await sauverEmbeds(true);
+    const variables = sampleVars('sondage');
+    const r = await api('/api/embeds/publier', {
+      module: 'sondage', salonId, variables,
+      mentionRoleId: $('sd-role').value, reactions: KEYCAPS.slice(0, options.length),
+    });
+    if (!r.success) return toast('❌ ' + r.error, 'error');
+    toast(r.warning ? '⚠️ ' + r.warning : '✅ Sondage publié dans #' + chanName(salonId), r.warning ? 'error' : 'success');
+  } catch (e) { toast('❌ ' + e.message, 'error'); } finally { busy(btn, false); }
+}
+
+async function publierAnnonce(btn) {
+  const c = CHAINES.find(x => String(x.id) === $('an-chaine').value);
+  const url = $('an-url').value.trim();
+  const salonId = $('an-salon').value || (c && c.salonAnnonceId) || '';
+  if (!c) return toast('Ajoute et choisis une chaîne.', 'error');
+  if (!$('an-titre').value.trim()) return toast('Donne un titre à la publication.', 'error');
+  if (!/^https?:\/\//.test(url)) return toast('Le lien direct doit commencer par https://', 'error');
+  if (!salonId) return toast('Choisis un salon.', 'error');
+  busy(btn, true);
+  try {
+    await sauverEmbeds(true);
+    const r = await api('/api/embeds/publier', {
+      module: 'annonce_chaine', salonId, variables: sampleVars('annonce_chaine'),
+      mentionRoleId: c.roleMentionId || '',
+      boutons: [{ label: '▶ Regarder', url }, { label: '🔔 S\'abonner', url: c.url }],
+    });
+    if (!r.success) return toast('❌ ' + r.error, 'error');
+    toast('✅ Annonce publiée dans #' + chanName(salonId));
+  } catch (e) { toast('❌ ' + e.message, 'error'); } finally { busy(btn, false); }
+}
+
+/* ───────── Chargement des réglages dans les champs ───────── */
+function applyConfig() {
+  const b = CFG.bienvenue, r = CFG.reglement, n = CFG.niveaux, a = CFG.automod;
+  setSel('bv-salon', b.salonId); $('bv-message').value = b.message || '';
+  $('bv-actif').checked = !!b.actif; $('bv-mention').checked = !!b.mention; $('bv-embed').checked = !!b.embed; $('bv-mp').checked = !!b.mp;
+  $('reg-titre').value = r.titre || ''; $('reg-contenu').value = r.contenu || ''; $('reg-emoji').value = r.emoji || '✅';
+  setSel('reg-role', r.roleAcceptationId); setSel('reg-salon', r.salonId); refreshRegInfo();
+  $('niv-actif').checked = !!n.actif; $('niv-xpmsg').value = n.xpParMessage; $('niv-xpvoc').value = n.xpParMinuteVocal;
+  $('niv-cd').value = n.cooldownMessages; setSel('niv-salon', n.salonAnnonceId);
+  REWARDS = (n.recompenses || []).map(x => ({ niveau: x.niveau, roleId: x.roleId })); renderRewards();
+  $('am-actif').checked = !!a.actif; $('am-suppr').checked = !!a.supprimerAuto; $('am-avert').checked = !!a.avertirMembre;
+  setSel('am-logs', a.salonLogsId); renderMots(a.motsInterdits || []);
+}
+
+/* ───────── Démarrage ───────── */
+async function init() {
+  [USER, GUILD, CFG, EMBEDS, DEFAULTS, CHANNELS, ROLES, CHAINES] = await Promise.all([
+    api('/api/user'), api('/api/guild'), api('/api/config'), api('/api/embeds'), api('/api/embeds/defaults'),
+    api('/api/guild/channels'), api('/api/guild/roles'), api('/api/chaines'),
+  ]);
+  $('userName').textContent = USER.username;
+  $('userAv').textContent = (USER.username || '?')[0].toUpperCase();
+  $('sideGuild').textContent = GUILD.name;
+  if (guildIcon()) $('sideLogo').innerHTML = `<img src="${esc(guildIcon())}" alt="">`;
+
+  populateSelects();
+  document.querySelectorAll('[data-preview]').forEach(buildPreviewShell);
+  document.querySelectorAll('[data-editor]').forEach(bindEditor);
+  applyConfig();
   renderChaines();
-  document.getElementById('ch-nom').value='';
-  document.getElementById('ch-url').value='';
-  showAlert('✅ Chaîne ajoutée !');
-}
+  Object.keys(EMBEDS).forEach(loadEditor);
 
-function supprimerChaine(i) {
-  chaines.splice(i, 1);
-  localStorage.setItem('jirito-chaines', JSON.stringify(chaines));
-  renderChaines();
-}
+  // L'aperçu suit aussi les champs des réglages qui alimentent les variables
+  const watch = (ids, mod) => ids.forEach(id => $(id).addEventListener('input', () => renderPreview(mod)));
+  watch(['bv-message'], 'bienvenue');
+  watch(['reg-titre', 'reg-contenu', 'reg-emoji'], 'reglement');
+  watch(['sd-question', 'sd-options'], 'sondage');
+  watch(['an-titre', 'an-desc', 'an-mini', 'an-url'], 'annonce_chaine');
 
-init();
+  showPanel((location.hash || '').slice(1));
+}
+init().catch((e) => { console.error(e); toast('❌ Impossible de charger le panel : ' + e.message, 'error'); });
 </script>
 </body>
 </html>
