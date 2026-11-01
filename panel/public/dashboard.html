@@ -301,7 +301,7 @@ code{background:#1e1f22;padding:1px 4px;border-radius:3px;font-size:13px}
             <div class="form-group"><label>Lien</label><input type="text" id="ch-url" placeholder="https://www.youtube.com/@machaine"></div>
             <div class="form-group"><label>Description (facultatif)</label><input type="text" id="ch-desc" maxlength="200"></div>
             <div class="row2">
-              <div class="form-group"><label>Salon des annonces</label><select class="sel-channel" id="ch-salon" data-empty="— Aucun —"></select></div>
+              <div class="form-group"><label>Salon des annonces</label><select class="sel-channel" id="ch-salon" data-empty="— Aucun —"></select><div class="hint">Obligatoire pour les annonces automatiques (YouTube, Twitch).</div></div>
               <div class="form-group"><label>Rôle à mentionner</label><select class="sel-role" id="ch-role" data-empty="— Personne —"></select></div>
             </div>
             <div class="actions"><button class="btn btn-success" onclick="addChaine(this)">➕ Ajouter la chaîne</button></div>
@@ -739,9 +739,14 @@ async function addMot() {
 $('mot-new').addEventListener('keydown', (e) => { if (e.key === 'Enter') addMot(); });
 
 /* ───────── Chaînes ───────── */
+function chaineStatut(c) {
+  if (c.plateforme === 'tiktok') return '✋ Annonce manuelle (TikTok n\'a pas d\'API officielle)';
+  if (!c.salonAnnonceId) return '⚠️ Pas de salon d\'annonces : aucune annonce automatique';
+  return `✅ Annonces automatiques dans #${esc(chanName(c.salonAnnonceId))}`;
+}
 function renderChaines() {
   $('chaines-list').innerHTML = CHAINES.length
-    ? CHAINES.map(c => `<div class="item"><span>${PLAT[c.plateforme] || '📺'}</span><div class="grow"><div class="nm">${esc(c.nom)} <span class="hint">#${c.id}</span></div><div class="ur">${esc(c.url)}</div></div><button class="btn btn-danger btn-sm" onclick="delChaine(${c.id})">🗑️</button></div>`).join('')
+    ? CHAINES.map(c => `<div class="item"><span>${PLAT[c.plateforme] || '📺'}</span><div class="grow"><div class="nm">${esc(c.nom)} <span class="hint">#${c.id}</span></div><div class="ur">${esc(c.url)}</div><div class="hint" style="margin-top:3px">${chaineStatut(c)}</div></div><button class="btn btn-danger btn-sm" onclick="delChaine(${c.id})">🗑️</button></div>`).join('')
     : '<div class="empty">Aucune chaîne enregistrée.</div>';
   const sel = $('an-chaine'), cur = sel.value;
   sel.innerHTML = CHAINES.length
