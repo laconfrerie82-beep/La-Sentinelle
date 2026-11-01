@@ -57,4 +57,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
+// Surveillance automatique des chaînes YouTube / Twitch (démarre une fois le bot connecté)
+client.once(Events.ClientReady, () => require('./watcher').start(client));
+
 client.login(process.env.DISCORD_TOKEN);
